@@ -20,6 +20,7 @@ public enum ApiServiceName {
     WRITE_BET_ACCOUNT_STATEMENT("write/account/statement", ""),
     WRITE_BET_ACCOUNT_TRANSACTION("write/account/transaction", ""),
     WRITE_MATCH_INFO("write/price/matchinfo", ""),
+    READ_CURRENCY("read/config/datasource/0", ""),
     READ_OUTCOME("read/price/outcome/0", JSONKeyNames.KEY_PK),
     WRITE_BETOFFER_REFERENCE("write/price/betofferreference", ""),
     WRITE_OUTCOME_REFERENCE("write/price/outcomereference", ""),

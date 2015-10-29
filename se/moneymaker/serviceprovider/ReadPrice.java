@@ -3,6 +3,7 @@ package se.moneymaker.serviceprovider;
 import com.betfair.aping.exceptions.APINGException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,6 +19,7 @@ import se.moneymaker.enums.ReadReason;
 import se.moneymaker.exception.BetOfferException;
 import se.moneymaker.exception.DBConnectionException;
 import se.moneymaker.exception.ErrorType;
+import se.moneymaker.model.Bookmaker;
 import se.moneymaker.util.Log;
 import se.moneymaker.util.Utils;
 
@@ -26,7 +28,6 @@ public class ReadPrice extends HttpServlet {
     private static final String CLASSNAME = ReadPrice.class.getName();
     private PriceReader priceReader;
     private final DBServices services;
-    private String accountName;
 
     public ReadPrice(DBServices services) {
         this.services = services;
@@ -48,8 +49,8 @@ public class ReadPrice extends HttpServlet {
         if (sessionToken != null) {
             StringBuilder sb = ServiceProviderUtility.readRequest(request.getReader());
             BetOfferIdsContainer betOfferIDs = JsonConverter.convertFromJson(sb.toString(), BetOfferIdsContainer.class);
-            accountName = betOfferIDs.getAccount().getAccountName();
-
+            String accountName = betOfferIDs.getAccount().getAccountName();
+            
             synchronized (this) {
                 if (priceReader == null) {
                     priceReader = new PriceReader(sessionToken, accountName, false, ReadReason.TRADING, 0);

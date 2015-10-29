@@ -16,6 +16,7 @@ import se.betfair.factory.FactoryBet;
 import se.betfair.model.AccountFundsResponse;
 import se.betfair.model.ClearedOrderSummary;
 import se.betfair.model.ClearedOrderSummaryReport;
+import se.betfair.model.ItemDescription;
 import se.betfair.model.TimeRange;
 import se.moneymaker.dict.Config;
 import se.moneymaker.db.DBAccount;
@@ -32,6 +33,7 @@ public class AccountReader extends Application implements Runnable {
 
     private final String CLASSNAME = AccountReader.class.getName();
     private final static long HEARTBEAT = 3600000; //60 minutes
+    public final static String MERGED_CANCELLED = "MoneyMakeerMergedCancelled";
     private DBBet connBet;
     private DBAccount connAccount;
     private BetfairServices services;
@@ -46,7 +48,7 @@ public class AccountReader extends Application implements Runnable {
     private List<ClearedOrderSummary> existingOrders;
     private List<ClearedOrderSummary> nonExistingOrders;
     private List<BetStatus> betStatuses;
-
+    
     public AccountReader(String accountName, String sessionToken, Date from) {
         initApplication(HEARTBEAT, CLASSNAME);
         this.from = from;
@@ -132,6 +134,19 @@ public class AccountReader extends Application implements Runnable {
                         for (ClearedOrderSummary settledOrder : settledOrders) {
                             if (cancelledOrder.getBetId().equals(settledOrder.getBetId())) {
                                 settledOrder.setSizeCancelled(cancelledOrder.getSizeCancelled());
+
+                                /**
+                                 * This is a bit of an ugly solution. The
+                                 * itemdescription object is used to indicate
+                                 * that this is a merged cancelled bet so that
+                                 * it is possible to distinguish between merged
+                                 * cancelled bet and merged lapsed bet since
+                                 * there is no sizeLapsed field but only
+                                 * sizeCnacelled.
+                                 */
+                                ItemDescription desc = new ItemDescription();
+                                desc.setMarketDesc(MERGED_CANCELLED);
+                                settledOrder.setItemDescription(desc);
                                 found = true;
                                 break;
                             }

@@ -22,7 +22,8 @@ public class JSONFactoryPrice {
     private static final String KEY_PROBABILITY = "probability";
     private static final String KEY_READ_REASON = "readReason";
     private static final String KEY_MINUTE_WEIGHT = "minuteWeight";
-
+    private static final String KEY_CURRENCY = "currency";
+    
     public static JSONObject parseJSONPrice(long Pk, Price price) {
         JSONObject priceJSON = new JSONObject();
         priceJSON.put(JSONKeyNames.KEY_SOURCE, price.getSource());
@@ -45,7 +46,7 @@ public class JSONFactoryPrice {
         }
 
         priceJSON.put(KEY_VOLUME_MATCHED_LOCAL, price.getVolumeMatched());
-
+        priceJSON.put(KEY_CURRENCY, price.getCurrency());
         if (price.getNumberOfTransactions() > 0) {
             priceJSON.put(KEY_NUMBER_OF_TRANSACTIONS, price.getNumberOfTransactions());
         }

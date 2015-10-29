@@ -20,8 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import se.betfair.model.AccountDetailsResponse;
 import se.betfair.model.AccountFundsResponse;
 import se.betfair.model.AccountStatementReport;
 import se.betfair.model.CancelExecutionReport;
@@ -36,9 +35,12 @@ import se.betfair.model.PlaceInstruction;
 import se.betfair.model.PlaceInstructionReport;
 import se.betfair.model.PriceProjection;
 import se.betfair.model.TimeRange;
+import se.moneymaker.db.DBServices;
 import se.moneymaker.enums.LogLevelEnum;
+import se.moneymaker.enums.Source;
 import se.moneymaker.exception.BetException;
 import se.moneymaker.exception.BetOfferException;
+import se.moneymaker.exception.DBConnectionException;
 import se.moneymaker.exception.ErrorType;
 import se.moneymaker.util.Log;
 
@@ -55,6 +57,7 @@ public class BetfairServices {
     private final String INSTRUCTIONS = "instructions";
     private final String MARKETROJECTION = "marketProjection";
     private final String PRICEPROJECTION = "priceProjection";
+    private final String CURRENCYCODE = "currencyCode";
     private final String BET_IDS = "betIds";
     private final String BET_STATUS = "betStatus";
     private final String SETTLED_DATE_RANGE = "settledDateRange";
@@ -73,6 +76,7 @@ public class BetfairServices {
     private Connection connectionKeepAlive;
     private Connection connectionClearedOrders;
     private Connection connectionLogout;
+    private Connection connectionAccoundDetails;
     private String sessionToken;
     private String accountName;
 
@@ -173,7 +177,7 @@ public class BetfairServices {
         return marketCatalogues;
     }
 
-    public List<MarketBook> listMarketBook(List<String> marketIds, PriceProjection priceProjection, String pSessionToken) throws APINGException {
+    public List<MarketBook> listMarketBook(List<String> marketIds, PriceProjection priceProjection, String currency, String pSessionToken) throws APINGException {
         final int DATA_REQUEST_LIMIT = 40;
         final int MARKET_BOOK_DELAY = 0;
         synchronized (this) {
@@ -185,7 +189,7 @@ public class BetfairServices {
         String result;
         Map<String, Object> params = new HashMap<>();
         params.put(PRICEPROJECTION, priceProjection);
-
+        params.put(CURRENCYCODE, currency);
         if (marketIds.size() > DATA_REQUEST_LIMIT) {
             int counter = 0;
             List<String> marketIdsSubList = new ArrayList<>();
@@ -262,7 +266,7 @@ public class BetfairServices {
         boolean hasMore = true;
         List<ClearedOrderSummary> orderSummary = new ArrayList<>();
         Set<String> betIdsTmp = new HashSet<>();
-        betIdsTmp.add("52320206383");
+        betIdsTmp.add("56767621133");
         betIds = betIdsTmp;
         if (connectionClearedOrders == null) {
             connectionClearedOrders = new Connection(URL_RPC_SERVICES_BETTING, accountName);
@@ -398,7 +402,18 @@ public class BetfairServices {
             throw new APINGException("Status: " + token.getStatus() + " Error: " + token.getError(), "", "");
         }
     }
-
+    
+    public AccountDetailsResponse getAccountDetails(){
+        final String METHOD = "getAccountDetails";
+        final int ACCOUNT_DETAILS_DELAY = 1000;
+        if (connectionAccoundDetails == null) {
+            connectionAccoundDetails = new Connection(URL_RPC_SERVICES_ACCOUNT, accountName);
+        }
+        Map<String, Object> params = new HashMap<>();
+        String result = makeRequest(ApiNgOperation.GET_ACCOUNT_FUNDS, params, connectionAccountFunds, ACCOUNT_DETAILS_DELAY);
+        AccountDetailsResponse accountDetails = JsonConverter.convertFromJson(result, AccountDetailsResponse.class);
+    }
+    
     public void logout(String pSessionToken) {
         final String METHOD = "logout";
         final int LOGOUT_DELAY = 0;

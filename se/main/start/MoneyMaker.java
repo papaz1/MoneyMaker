@@ -53,7 +53,7 @@ public class MoneyMaker {
         MoneyMaker main = new MoneyMaker();
 
         //Set to false when debugging in Netbeans
-        if (true) {
+        if (false) {
             try {
                 main.init(args);
             } catch (DBConnectionException | AccountException e) {
@@ -98,8 +98,8 @@ public class MoneyMaker {
         } else if (application.equalsIgnoreCase(SERVICEPROVIDER)) {
             (new ServiceProvider()).start();
         } else if (application.equalsIgnoreCase(PRICEREADER)) {
-            betfairUsername = config.get(ConfigEnum.BF_USER_TELEMAN199429);
-            sessionTokenBetfair = Account.getInstance().login(betfairUsername, config.get(ConfigEnum.BF_PASS_TELEMAN199429));
+            betfairUsername = config.get(ConfigEnum.BF_USER_DJ78351);
+            sessionTokenBetfair = Account.getInstance().login(betfairUsername, config.get(ConfigEnum.BF_PASS_DJ78351));
             priceReader = new PriceReader(sessionTokenBetfair, betfairUsername, true, ReadReason.HEARTBEAT, 6);
             startThread(priceReader);
         } else if (application.equalsIgnoreCase(FEEDREADER)) {
@@ -245,10 +245,10 @@ public class MoneyMaker {
         Config config = Config.getInstance();
         if (application.equalsIgnoreCase(PRICEREADER)) {
             try {
+                
                 //Prematchreader
-                String accountName = "DJ78351";
-                String betfairSession = Account.getInstance().login(accountName, config.get(ConfigEnum.BF_PASS_DJ78351));
-                PriceReader priceReader = new PriceReader(betfairSession, accountName, true, ReadReason.HEARTBEAT, 6);
+                String betfairSession = Account.getInstance().login(config.get(ConfigEnum.BF_USER_DJ78351), config.get(ConfigEnum.BF_PASS_DJ78351));
+                PriceReader priceReader = new PriceReader(betfairSession, config.get(ConfigEnum.BF_USER_DJ78351), true, ReadReason.HEARTBEAT, 6);
                 Thread t = new Thread(priceReader);
                 t.start();
             } catch (DBConnectionException e) {
@@ -288,7 +288,7 @@ public class MoneyMaker {
             try {
                 String betfairSession = Account.getInstance().login(config.get(ConfigEnum.BF_USER_DJ78351), config.get(ConfigEnum.BF_PASS_DJ78351));
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                String date = "2015-06-30";
+                String date = "2015-10-01";
                 Date from = df.parse(date);
                 AccountReader accountReader = new AccountReader(Account.getInstance().getUsername(), betfairSession, from);
                 Thread t = new Thread(accountReader);

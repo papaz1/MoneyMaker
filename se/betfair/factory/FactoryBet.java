@@ -9,7 +9,9 @@ import java.util.Iterator;
 import java.util.List;
 import se.betfair.model.ClearedOrderSummary;
 import se.betfair.model.CurrentOrderSummary;
+import se.betfair.model.ItemDescription;
 import se.betfair.model.PlaceInstructionReport;
+import se.main.application.AccountReader;
 import se.moneymaker.container.PlaceBetContainer;
 import se.moneymaker.container.PlaceBetItem;
 import se.moneymaker.db.DBServices;
@@ -126,13 +128,22 @@ public class FactoryBet {
         betfairBet.setRequestedPrice(order.getPriceRequested());
         betfairBet.setAveragePriceMatched(order.getPriceMatched());
         betfairBet.setRequestedStakelocal(order.getSizeSettled() + order.getSizeCancelled());
-        
+
         if (status.equals(BetStatus.VOIDED)) {
             betfairBet.setSizeVoided(order.getSizeSettled());
         } else if (status.equals(BetStatus.CANCELLED)) {
             betfairBet.setSizeCancelled(order.getSizeCancelled());
         } else {
+            //Bets could have been merged so there might be a 
             betfairBet.setSizeMatched(order.getSizeSettled());
+        }
+
+        //Check if this is a merged cancelled bet and in that case set the sizeCancelled field
+        ItemDescription desc = order.getItemDescription();
+        if (desc != null && desc.getMarketDesc() != null) {
+            if (desc.getMarketDesc().equals(AccountReader.MERGED_CANCELLED)) {
+                betfairBet.setSizeCancelled(order.getSizeCancelled());
+            }
         }
 
         betfairBet.setSide(order.getSide());

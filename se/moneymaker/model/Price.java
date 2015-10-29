@@ -21,6 +21,15 @@ public class Price {
     private String source;
     private ReadReason readReason;
     private double minuteWeight;
+    private String currency;
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
 
     public double getMinuteWeight() {
         return minuteWeight;

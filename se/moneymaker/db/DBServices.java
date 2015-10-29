@@ -14,6 +14,7 @@ import se.moneymaker.enums.DBBoolean;
 import se.moneymaker.exception.DBConnectionException;
 import se.moneymaker.exception.ErrorType;
 import se.moneymaker.exception.NoDataException;
+import se.moneymaker.jsonfactory.JSONFactoryAccount;
 import se.moneymaker.jsonfactory.JSONFactoryBet;
 import se.moneymaker.jsonfactory.JSONFactoryBetOffer;
 import se.moneymaker.jsonfactory.JSONFactoryMatch;
@@ -34,11 +35,28 @@ public class DBServices {
         connection = new DBConnection(isPublicDomain);
     }
 
+    public String readCurrency(String bookmaker) throws DBConnectionException {
+        JSONArray currencyCall = new JSONArray();
+        currencyCall.add(JSONFactoryAccount.createCurrencyCodeReadCall(bookmaker));
+        JSONArray results = connection.sendRequestResponse(ApiServiceName.READ_CURRENCY, currencyCall, ApiConnectionEnum.POST);
+
+        if (results.size() > 1) {
+            throw new DBConnectionException("More than one currency returned for: " + bookmaker);
+        } else {
+            JSONObject result = (JSONObject) results.get(0);
+            JSONObject currencyJSON = new JSONObject();
+            currencyJSON = (JSONObject) result.get(JSONKeyNames.KEY_CURRENCY);
+            String currency = (String) currencyJSON.get(JSONKeyNames.KEY_PK);
+            return currency;
+        }
+    }
+
     public long readMatchPk(Match match) throws DBConnectionException {
         JSONObject matchJSON = JSONFactoryMatch.createMatch(match);
         JSONArray matchesJSON = new JSONArray();
         matchesJSON.add(matchJSON);
         JSONArray results = connection.sendRequestResponse(ApiServiceName.MATCH, matchesJSON, ApiConnectionEnum.POST);
+
         if (results.size() > 1) {
             throw new DBConnectionException("More than one match returned for: " + match.getHome() + " vs " + match.getAway());
         } else {
@@ -72,7 +90,7 @@ public class DBServices {
         BetOffer betOfferCopy = betOffer;
         JSONArray betOffersJSON = new JSONArray();
         betOffersJSON.add(JSONFactoryBetOffer.createJSONBetOffer(matchDBIB, betOfferCopy));
-        
+
         JSONArray results = connection.sendRequestResponse(ApiServiceName.WRITE_BETOFFER, betOffersJSON, ApiConnectionEnum.POST);
         if (results.size() > 1) {
             throw new DBConnectionException("More than one betoffer returned for: " + betOfferCopy.getName() + " matchPk: " + matchDBIB);

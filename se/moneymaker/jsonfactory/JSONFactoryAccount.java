@@ -7,16 +7,6 @@ import se.moneymaker.model.AccountStatement;
 import se.moneymaker.model.AccountTransaction;
 import se.moneymaker.util.Utils;
 
-/*
- *
- *
- * ------------------------------------------------------------------------------
- * Change History
- * ------------------------------------------------------------------------------
- * Version Date Author Comments
- * ------------------------------------------------------------------------------
- * 1.0 2012-mar-30 Baran Sölen Initial version
- */
 public class JSONFactoryAccount {
 
     private static final String TAG_UTC_TRANSACTION = "utcTransaction";
@@ -27,7 +17,8 @@ public class JSONFactoryAccount {
     private static final String TAG_UTC_STATEMENT = "utcStatement";
     private static final String TAG_STATEMENT_LOCAL = "statementLocal";
     private static final String TAG_ACCOUNT_NAME = "accountName";
-
+    private static final String TAG_NAME = "name";
+    
     public static JSONObject parseAccount(String bookmaker, String accountName) {
         JSONObject accountJSON = new JSONObject();
         JSONObject bookmakerJSON = new JSONObject();
@@ -73,5 +64,11 @@ public class JSONFactoryAccount {
         accountStatementsJSON.add(accountStatementJSON);
 
         return accountStatementsJSON;
+    }
+
+    public static JSONObject createCurrencyCodeReadCall(String accountName) {
+        JSONObject currencyCode = new JSONObject();
+        currencyCode.put(TAG_NAME, accountName);
+        return currencyCode;
     }
 }

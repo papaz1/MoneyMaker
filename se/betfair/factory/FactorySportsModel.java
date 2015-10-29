@@ -10,6 +10,7 @@ import se.betfair.model.MarketCatalogue;
 import se.betfair.model.PriceSize;
 import se.betfair.model.Runner;
 import se.betfair.model.RunnerCatalog;
+import se.moneymaker.db.DBServices;
 import se.moneymaker.dict.Config;
 import se.moneymaker.dict.BetOfferDict;
 import se.moneymaker.enums.BetOfferTypeEnum;
@@ -27,6 +28,7 @@ import se.moneymaker.model.Price;
 import se.moneymaker.enums.PriceEnum;
 import se.moneymaker.enums.ReadReason;
 import se.moneymaker.enums.Source;
+import se.moneymaker.exception.DBConnectionException;
 import se.moneymaker.exception.MatchException;
 import se.moneymaker.model.MatchReference;
 import se.moneymaker.model.MatchReferenceInfo;
@@ -39,6 +41,7 @@ public class FactorySportsModel {
     private final Config config;
     private ReadReason readReason;
     private double minuteWeight;
+    private String currency;
 
     public ReadReason getReadReason() {
         return readReason;
@@ -57,7 +60,14 @@ public class FactorySportsModel {
     }
 
     public FactorySportsModel() {
+        final String METHOD = "FactorySportsModel";
         config = Config.getInstance();
+        DBServices services = new DBServices(true);
+        try {
+            currency = services.readCurrency(Source.BETFAIR.getName());
+        } catch (DBConnectionException e) {
+            Log.logMessage(CLASSNAME, METHOD, "Error reading currency code: " + e.getErrorType(), LogLevelEnum.ERROR, true);
+        }
     }
 
     public List<Match> createMatches(Operation operation, List<MarketCatalogue> marketCatalogues) {
@@ -74,14 +84,7 @@ public class FactorySportsModel {
                     match = createMatch(marketCatalogue);
                     match.setSource(Source.BETFAIR.getName());
                     betOffer = createBetOffer(marketCatalogue, match.getHome(), match.getAway());
-                    //Begin special log
-                    Log.logMessage(CLASSNAME, METHOD, "BEGIN BETOFFER:" + betOffer.getName() + ":" + betOffer.getExternalKey(), LogLevelEnum.INFO, true);
                     outcomes = createOutcomes(marketCatalogue, match.getHome(), match.getAway(), betOffer.getItem().getType());
-                    System.out.println("outcomes, name|selectionId:");
-                    for (Outcome o : outcomes) {
-                        System.out.print(o.getName() + "|" + o.getExternalKey() + " ");
-                    }
-                    //End special log
                 } else {
                     match = new Match();
                     betOffer = BetOfferDict.getBetOffer(marketCatalogue.getMarketId());
@@ -92,14 +95,6 @@ public class FactorySportsModel {
                     for (Outcome outcome : outcomes) {
                         outcome.clearPrices();
                     }
-
-                    //Begin special log
-                    Log.logMessage(CLASSNAME, METHOD, "BEGIN BETOFFER:" + betOffer.getName() + ":" + betOffer.getExternalKey(), LogLevelEnum.INFO, true);
-                    System.out.println("outcomes, name|selectionId:");
-                    for (Outcome o : outcomes) {
-                        System.out.print(o.getName() + "|" + o.getExternalKey() + " ");
-                    }
-                    //End special log
                 }
 
                 if (outcomes != null) {
@@ -118,23 +113,8 @@ public class FactorySportsModel {
                     if (betOffer.getMaxNumberOfOutcomes() == betOffer.getOutcomes().size()) {
                         betOffer.setPayback(Utils.calculateBetOfferPayback(betOffer.getOutcomes()));
                     }
-                    System.out.println();
-                    System.out.println("betoffer with outcomes and best price as sent to Betprover: ");
-                    List<Outcome> ocomes = betOffer.getOutcomes();
-                    for (Outcome ocome : ocomes) {
-                        System.out.println("selectionId: " + ocome.getExternalKey());
-                        List<Price> pes = ocome.getPrices();
-                        System.out.println("price-amountAvailable-utcEncounter:");
-                        for (Price pe : pes) {
-                            System.out.print(pe.getPrice() + "|" + pe.getAmountAvailable() + "|" + pe.getUtcEncounter() + " ");
-                        }
-                        System.out.println();
-                    }
                     match.addBetOffer(betOffer);
                     matches.add(match);
-                    System.out.println();
-                    System.out.println("END BETOFFER");
-                    System.out.println();
                 }
             } catch (BetOfferException | OutcomeException | ParseException e) {
                 numberOfExcludedBetOffers++;
@@ -227,7 +207,6 @@ public class FactorySportsModel {
         outcome.setSource(Source.BETFAIR.getName());
         outcome.setID(runnerCatalog.getSelectionId());
         outcome.setName(runnerCatalog.getRunnerName());
-        System.out.println("Call to parseOutcomeItem. home: " + home + " away: " + away + " runnerName: " + runnerCatalog.getRunnerName());
         outcome.setItem(FactoryBetOfferOutcomeItem.parseOutcomeItem(betOfferType, home, away, runnerCatalog.getRunnerName()));
         return outcome;
     }
@@ -239,15 +218,8 @@ public class FactorySportsModel {
         PriceSize priceSize;
         Price price;
         double totalAmountMatchedForSelection;
-        System.out.println("All prices from marketbook (unparsed): ");
+
         for (Runner runner : runners) {
-            System.out.print("selectionId: " + runner.getSelectionId() + " ");
-            List<PriceSize> priceSizes = runner.getEx().getAvailableToBack();
-            System.out.print(" BACK, price|size: ");
-            for (PriceSize p : priceSizes) {
-                System.out.print(p.getPrice() + "|" + p.getSize() + " ");
-            }
-            System.out.println();
             priceSize = getBestPrice(true, runner.getEx().getAvailableToBack());
 
             //If there is no money on the price then priceSize will be null
@@ -256,13 +228,6 @@ public class FactorySportsModel {
                 price = createPrice(runner.getSelectionId(), priceSize.getPrice(), totalAmountMatchedForSelection, priceSize.getSize(), PriceEnum.BACK, marketBook.getUtcEncounter(), isLive);
                 prices.add(price);
             }
-
-            priceSizes = runner.getEx().getAvailableToLay();
-            System.out.print(" LAY, price|size: ");
-            for (PriceSize p : priceSizes) {
-                System.out.print(p.getPrice() + "|" + p.getSize() + " ");
-            }
-            System.out.println();
 
             priceSize = getBestPrice(false, runner.getEx().getAvailableToLay());
             if (priceSize != null) {
@@ -286,6 +251,7 @@ public class FactorySportsModel {
     private Price createPrice(long selectionId, double price, double totalAmountMatched, double amountAvailable, PriceEnum priceType,
             Date utcEncounter, boolean isLive) {
         Price priceObj = new Price();
+        priceObj.setCurrency(currency);
         priceObj.setReadReason(readReason);
         priceObj.setMinuteWeight(minuteWeight);
         priceObj.setSource(Source.BETFAIR.getName());

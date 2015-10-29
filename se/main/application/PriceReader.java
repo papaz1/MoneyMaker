@@ -21,6 +21,7 @@ import se.betfair.model.MarketCatalogue;
 import se.betfair.model.MarketFilter;
 import se.betfair.model.PriceProjection;
 import se.betfair.model.TimeRange;
+import se.moneymaker.db.DBServices;
 import se.moneymaker.dict.Config;
 import se.moneymaker.db.DBSportsModel;
 import se.moneymaker.dict.BetOfferDict;
@@ -43,7 +44,7 @@ public class PriceReader extends Application implements Runnable {
 
     private final static String CLASSNAME = PriceReader.class.getName();
     private static final long HEARTBEAT = 1800000; //30 minutes
-    private final long TIME_SLEEP = 360000;
+    private final long TIME_SLEEP = 60000;
     private MarketFilter marketFilter;
     private BetfairServices services;
     private Set<String> marketProjection;
@@ -59,7 +60,6 @@ public class PriceReader extends Application implements Runnable {
     private Set<String> marketTypeCodeOverUnder4;
     private Set<String> marketTypeCodeOverUnder5;
     private Set<String> marketTypeCodeOverUnder6;
-
     private Set<String> marketTypeCodeCorrectScore;
     private List<Set<String>> marketTypeCodes;
     private String sessionToken;
@@ -71,8 +71,10 @@ public class PriceReader extends Application implements Runnable {
     private FactorySportsModel factory;
     private String accountName;
     private HashMap<String, MarketCatalogue> marketCatalgouesMap;
+    private String currency;
 
     public PriceReader(String sessionToken, String accountName, boolean runAsApplication, ReadReason readReason, double minuteWeight) {
+        final String METHOD = "PriceReader";
         this.accountName = accountName;
         this.runAsApplication = runAsApplication;
         this.sessionToken = sessionToken;
@@ -85,6 +87,12 @@ public class PriceReader extends Application implements Runnable {
         try {
             today = new Date(Utils.parseStringToLongDate(df.format(new Date()), df));
         } catch (ParseException ex) {
+        }
+        try {
+            DBServices services = new DBServices(true);
+            currency = services.readCurrency(Source.BETFAIR.getName());
+        } catch (DBConnectionException e) {
+            Log.logMessage(CLASSNAME, METHOD, "Error when reading currency: " + e.getErrorType(), LogLevelEnum.CRITICAL, true);
         }
         if (runAsApplication) {
             marketFilter = createtMarketFilter();
@@ -110,15 +118,15 @@ public class PriceReader extends Application implements Runnable {
             marketTypeCodeOverUnder4.add(Common.MARKET_TYPE_OVER_UNDER_35);
             marketTypeCodeOverUnder5.add(Common.MARKET_TYPE_OVER_UNDER_45);
             marketTypeCodeOverUnder6.add(Common.MARKET_TYPE_OVER_UNDER_55);
-            //marketTypeCodeOverUnder4.add(Common.MARKET_TYPE_OVER_UNDER_65);
-            //marketTypeCodeOverUnder5.add(Common.MARKET_TYPE_OVER_UNDER_75);
-            //marketTypeCodeOverUnder6.add(Common.MARKET_TYPE_OVER_UNDER_85);
-            marketTypeCodes.add(marketTypeCodeOverUnder1);
-            marketTypeCodes.add(marketTypeCodeOverUnder2);
-            marketTypeCodes.add(marketTypeCodeOverUnder3);
-            marketTypeCodes.add(marketTypeCodeOverUnder4);
-            marketTypeCodes.add(marketTypeCodeOverUnder5);
-            marketTypeCodes.add(marketTypeCodeOverUnder6);
+            marketTypeCodeOverUnder4.add(Common.MARKET_TYPE_OVER_UNDER_65);
+            marketTypeCodeOverUnder5.add(Common.MARKET_TYPE_OVER_UNDER_75);
+            marketTypeCodeOverUnder6.add(Common.MARKET_TYPE_OVER_UNDER_85);
+            //marketTypeCodes.add(marketTypeCodeOverUnder1);
+            //marketTypeCodes.add(marketTypeCodeOverUnder2);
+            //marketTypeCodes.add(marketTypeCodeOverUnder3);
+            //marketTypeCodes.add(marketTypeCodeOverUnder4);
+            //marketTypeCodes.add(marketTypeCodeOverUnder5);
+            //marketTypeCodes.add(marketTypeCodeOverUnder6);
             marketTypeCodeCorrectScore = new HashSet<>();
             marketTypeCodeCorrectScore.add(Common.MARKET_TYPE_CORRECT_SCORE);
             //marketTypeCodes.add(marketTypeCodeCorrectScore);
@@ -237,12 +245,12 @@ public class PriceReader extends Application implements Runnable {
 
             List<MarketBook> marketBooks;
             if (pSessionToken != null) {
-                marketBooks = services.listMarketBook(marketIds, priceProjection, pSessionToken);
+                marketBooks = services.listMarketBook(marketIds, priceProjection, currency, pSessionToken);
                 if (containsSuspendedMarkets(marketBooks)) {
                     throw new BetOfferException("Market suspended", ErrorType.MARKET_SUSPENDED);
                 }
             } else {
-                marketBooks = services.listMarketBook(marketIds, priceProjection, sessionToken);
+                marketBooks = services.listMarketBook(marketIds, priceProjection, currency, sessionToken);
                 int before = marketBooks.size();
                 marketBooks = keepOpenMarkets(marketBooks);
                 int after = marketBooks.size();
