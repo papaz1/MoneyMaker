@@ -2,16 +2,6 @@ package se.moneymaker.model;
 
 import java.util.Date;
 
-/*
- *
- *
- * ------------------------------------------------------------------------------
- * Change History
- * ------------------------------------------------------------------------------
- * Version Date Author Comments
- * ------------------------------------------------------------------------------
- * 1.0 2012-mar-11 Baran Sölen Initial version
- */
 public class AccountTransaction {
 
     private String id;

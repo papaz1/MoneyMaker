@@ -31,6 +31,7 @@ public class Bet {
     private double commission;
     private double unexpectedPlusLocal;
     private double unexpectedMinusLocal;
+    private String currency;
 
     public double getUnexpectedPlusLocal() {
         return unexpectedPlusLocal;
@@ -243,5 +244,13 @@ public class Bet {
 
     public void setValidUntil(Date validUntil) {
         this.validUntil = validUntil;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 }

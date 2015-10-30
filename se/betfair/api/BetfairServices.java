@@ -1,5 +1,6 @@
 package se.betfair.api;
 
+import com.betfair.aping.containers.AccountDetailsResponseContainer;
 import com.betfair.aping.containers.AccountFundsResponseContainer;
 import com.betfair.aping.containers.AccountStatementReportContainer;
 import com.betfair.aping.containers.CancelOrdersContainer;
@@ -323,6 +324,7 @@ public class BetfairServices {
         if (container.getError() != null) {
             throw container.getError().getData().getAPINGException();
         }
+
         PlaceExecutionReport executionReport = container.getResult();
         ExecutionReportErrorCode executionReportErrorCode = executionReport.getErrorCode();
         if (executionReportErrorCode != null) {
@@ -402,18 +404,23 @@ public class BetfairServices {
             throw new APINGException("Status: " + token.getStatus() + " Error: " + token.getError(), "", "");
         }
     }
-    
-    public AccountDetailsResponse getAccountDetails(){
-        final String METHOD = "getAccountDetails";
+
+    public AccountDetailsResponse getAccountDetails() throws APINGException {
         final int ACCOUNT_DETAILS_DELAY = 1000;
         if (connectionAccoundDetails == null) {
             connectionAccoundDetails = new Connection(URL_RPC_SERVICES_ACCOUNT, accountName);
         }
         Map<String, Object> params = new HashMap<>();
         String result = makeRequest(ApiNgOperation.GET_ACCOUNT_FUNDS, params, connectionAccountFunds, ACCOUNT_DETAILS_DELAY);
-        AccountDetailsResponse accountDetails = JsonConverter.convertFromJson(result, AccountDetailsResponse.class);
+        AccountDetailsResponseContainer container = JsonConverter.convertFromJson(result, AccountDetailsResponseContainer.class);
+
+        if (container.getError() != null) {
+            throw container.getError().getData().getAPINGException();
+        }
+
+        return container.getResult();
     }
-    
+
     public void logout(String pSessionToken) {
         final String METHOD = "logout";
         final int LOGOUT_DELAY = 0;

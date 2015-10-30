@@ -20,5 +20,4 @@ public class JSONKeyNames {
     public static final String KEY_AUTO_CORRECT = "autoCorrect";
     public static final String KEY_HAS_OTHERS = "hasOthers";
     public static final String KEY_CURRENCY = "currency";
-
 }

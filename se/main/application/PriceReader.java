@@ -121,12 +121,12 @@ public class PriceReader extends Application implements Runnable {
             marketTypeCodeOverUnder4.add(Common.MARKET_TYPE_OVER_UNDER_65);
             marketTypeCodeOverUnder5.add(Common.MARKET_TYPE_OVER_UNDER_75);
             marketTypeCodeOverUnder6.add(Common.MARKET_TYPE_OVER_UNDER_85);
-            //marketTypeCodes.add(marketTypeCodeOverUnder1);
-            //marketTypeCodes.add(marketTypeCodeOverUnder2);
-            //marketTypeCodes.add(marketTypeCodeOverUnder3);
-            //marketTypeCodes.add(marketTypeCodeOverUnder4);
-            //marketTypeCodes.add(marketTypeCodeOverUnder5);
-            //marketTypeCodes.add(marketTypeCodeOverUnder6);
+            marketTypeCodes.add(marketTypeCodeOverUnder1);
+            marketTypeCodes.add(marketTypeCodeOverUnder2);
+            marketTypeCodes.add(marketTypeCodeOverUnder3);
+            marketTypeCodes.add(marketTypeCodeOverUnder4);
+            marketTypeCodes.add(marketTypeCodeOverUnder5);
+            marketTypeCodes.add(marketTypeCodeOverUnder6);
             marketTypeCodeCorrectScore = new HashSet<>();
             marketTypeCodeCorrectScore.add(Common.MARKET_TYPE_CORRECT_SCORE);
             //marketTypeCodes.add(marketTypeCodeCorrectScore);

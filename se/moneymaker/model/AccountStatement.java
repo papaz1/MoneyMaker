@@ -2,26 +2,22 @@ package se.moneymaker.model;
 
 import java.util.Date;
 
-/*
- *
- *
- * ------------------------------------------------------------------------------
- * Change History
- * ------------------------------------------------------------------------------
- * Version Date Author Comments
- * ------------------------------------------------------------------------------
- * 1.0 2012-mar-10 Baran Sölen Initial version
- */
 public class AccountStatement {
 
     private Date utcStatement;
     private String statementLocal;
     private String bookmaker;
     private String accountName;
+    private String currency;
 
-    public AccountStatement(String bookmaker, String accountName) {
+    public AccountStatement(String bookmaker, String accountName, String currency) {
         this.bookmaker = bookmaker;
         this.accountName = accountName;
+        this.currency = currency;
+    }
+
+    public String getCurrency() {
+        return currency;
     }
 
     public String getAccountName() {

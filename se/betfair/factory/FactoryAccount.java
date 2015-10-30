@@ -12,14 +12,16 @@ public class FactoryAccount {
 
     private String bookmaker;
     private String accountName;
+    private String currency;
 
-    public FactoryAccount(String bookmaker, String accountName) {
+    public FactoryAccount(String bookmaker, String accountName, String currency) {
         this.bookmaker = bookmaker;
         this.accountName = accountName;
+        this.currency = currency;
     }
 
     public AccountStatement createAccountStatement(double statement) {
-        AccountStatement betAccountStatement = new AccountStatement(bookmaker, accountName);
+        AccountStatement betAccountStatement = new AccountStatement(bookmaker, accountName, currency);
         Date balanceUTCEncounter;
         balanceUTCEncounter = Utils.getCurrentTimeUTC();
         betAccountStatement.setUTCStatement(balanceUTCEncounter);

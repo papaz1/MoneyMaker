@@ -32,12 +32,14 @@ public class FactoryBet {
     private static final String CLASSNAME = FactoryBet.class.getName();
     private static final int SCALE = 2;
     private String accountName;
+    private String currency;
 
     public FactoryBet() {
     }
 
-    public FactoryBet(String accountName) {
+    public FactoryBet(String accountName, String currency) {
         this.accountName = accountName;
+        this.currency = currency;
     }
 
     public void setAccountName(String accountName) {
@@ -122,6 +124,7 @@ public class FactoryBet {
 
     private Bet updateClearedBet(ClearedOrderSummary order, BetStatus status, String pk) {
         BetfairBet betfairBet = new BetfairBet(order.getBetId());
+        betfairBet.setCurrenyCode(currency);
         betfairBet.setMarketId(order.getMarketId());
         betfairBet.setSelectionId(order.getSelectionId());
         betfairBet.setPlacedDate(order.getPlacedDate());
@@ -159,6 +162,7 @@ public class FactoryBet {
 
     private Bet updateCurrentBet(CurrentOrderSummary order, Bet bet) {
         BetfairBet betfairBet = new BetfairBet(order.getBetId());
+        betfairBet.setCurrenyCode(currency);
         betfairBet.setMarketId(order.getMarketId());
         betfairBet.setSelectionId(order.getSelectionId());
         betfairBet.setPlacedDate(order.getPlacedDate());
@@ -178,6 +182,7 @@ public class FactoryBet {
 
         //Common fields for all statuses
         bet.setPk(bet.getPk());
+        bet.setCurrency(currency);
         bet.setBetOfferId(betfairBet.getMarketId());
         bet.setOutcomeExternalKey(Long.toString(betfairBet.getSelectionId()));
         bet.setExternalKey(betfairBet.getBetId());
@@ -312,9 +317,18 @@ public class FactoryBet {
         private double profit;
         private double requestedStakelocal;
         private double commission;
+        private String currencyCode;
 
         public BetfairBet(String betId) {
             this.betId = betId;
+        }
+
+        public String getCurrencyCode() {
+            return currencyCode;
+        }
+
+        public void setCurrenyCode(String currencyCode) {
+            this.currencyCode = currencyCode;
         }
 
         public double getRequestedStakeLocal() {

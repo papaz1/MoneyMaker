@@ -52,6 +52,7 @@ public class JSONFactoryBet {
 
     public static JSONObject createBet(Bet bet, boolean isRepairMode) {
         JSONObject betJSON = new JSONObject();
+        betJSON.put(JSONKeyNames.KEY_CURRENCY, bet.getCurrency());
         betJSON.put(UNEXPECTED_PLUS_LOCAL, bet.getUnexpectedPlusLocal());
         betJSON.put(UNEXPECTED_MINUS_LOCAL, bet.getUnexpectedMinusLocal());
 
@@ -64,8 +65,6 @@ public class JSONFactoryBet {
         if (bet.getPk() != null) {
             betJSON.put(JSONKeyNames.KEY_PK, bet.getPk());
         } else if (bet.getExternalKey() != null) {
-
-            //TODO: This is a temporary solution and needs to be repalced with robust user account handling
             betJSON.put(JSONKeyNames.KEY_EXTERNAL_KEY, bet.getExternalKey());
             String accountName = bet.getAccountName();
             betJSON.put(JSONKeyNames.KEY_ACCOUNT, JSONFactoryAccount.parseAccount(bet.getBookmaker(), accountName));

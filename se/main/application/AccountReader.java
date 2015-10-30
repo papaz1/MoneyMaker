@@ -10,9 +10,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import se.betfair.api.BetfairServices;
 import se.betfair.factory.FactoryAccount;
 import se.betfair.factory.FactoryBet;
+import se.betfair.model.AccountDetailsResponse;
 import se.betfair.model.AccountFundsResponse;
 import se.betfair.model.ClearedOrderSummary;
 import se.betfair.model.ClearedOrderSummaryReport;
@@ -48,8 +51,10 @@ public class AccountReader extends Application implements Runnable {
     private List<ClearedOrderSummary> existingOrders;
     private List<ClearedOrderSummary> nonExistingOrders;
     private List<BetStatus> betStatuses;
-    
+    private String currency;
+
     public AccountReader(String accountName, String sessionToken, Date from) {
+        final String METHOD = "AccountReader";
         initApplication(HEARTBEAT, CLASSNAME);
         this.from = from;
         betStatuses = new ArrayList<>(3);
@@ -59,9 +64,18 @@ public class AccountReader extends Application implements Runnable {
         betStatuses.add(BetStatus.SETTLED);
         Config config = Config.getInstance();
         config.get(accountName);
+
         services = new BetfairServices(sessionToken, accountName);
-        factoryBet = new FactoryBet(accountName);
-        factoryAccount = new FactoryAccount(Source.BETFAIR.getName(), accountName);
+        try {
+            AccountDetailsResponse accountDetails = services.getAccountDetails();
+            currency = accountDetails.getCurrencyCode();
+        } catch (APINGException e) {
+            Log.logMessage(CLASSNAME, METHOD, "Could not get account details from Betfair", LogLevelEnum.CRITICAL, true);
+            System.exit(0);
+        }
+
+        factoryBet = new FactoryBet(accountName, currency);
+        factoryAccount = new FactoryAccount(Source.BETFAIR.getName(), accountName, currency);
         connBet = new DBBet(Source.BETFAIR.getName(), accountName);
         connAccount = new DBAccount();
         df = new SimpleDateFormat("yyyyMMdd");

@@ -53,7 +53,7 @@ public class MoneyMaker {
         MoneyMaker main = new MoneyMaker();
 
         //Set to false when debugging in Netbeans
-        if (false) {
+        if (true) {
             try {
                 main.init(args);
             } catch (DBConnectionException | AccountException e) {

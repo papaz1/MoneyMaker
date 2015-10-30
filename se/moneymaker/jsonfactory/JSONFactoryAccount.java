@@ -18,7 +18,7 @@ public class JSONFactoryAccount {
     private static final String TAG_STATEMENT_LOCAL = "statementLocal";
     private static final String TAG_ACCOUNT_NAME = "accountName";
     private static final String TAG_NAME = "name";
-    
+
     public static JSONObject parseAccount(String bookmaker, String accountName) {
         JSONObject accountJSON = new JSONObject();
         JSONObject bookmakerJSON = new JSONObject();
@@ -61,6 +61,7 @@ public class JSONFactoryAccount {
         accountStatementJSON.put(TAG_UTC_STATEMENT, Utils.dateToString(accountStatement.getUTCStatement()));
         accountStatementJSON.put(TAG_STATEMENT_LOCAL, accountStatement.getStatementLocal());
         accountStatementJSON.put(JSONKeyNames.KEY_ACCOUNT, JSONFactoryAccount.parseAccount(accountStatement.getBookmaker(), accountStatement.getAccountName()));
+        accountStatementJSON.put(JSONKeyNames.KEY_CURRENCY, accountStatement.getCurrency());
         accountStatementsJSON.add(accountStatementJSON);
 
         return accountStatementsJSON;

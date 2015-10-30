@@ -4,6 +4,7 @@ import com.betfair.aping.exceptions.APINGException;
 import java.util.*;
 import se.betfair.api.BetfairServices;
 import se.betfair.factory.FactoryBet;
+import se.betfair.model.AccountDetailsResponse;
 import se.betfair.model.CurrentOrderSummary;
 import se.betfair.model.CurrentOrderSummaryReport;
 import se.moneymaker.db.DBBet;
@@ -27,12 +28,23 @@ public class BetUpdater extends Application implements Runnable {
     private FactoryBet factory;
     private DBServices dbServcies;
     private String accountName;
+    private String currency;
 
     public BetUpdater(String accountName, String sessionToken) {
+        final String METHOD = "BetUpdater";
         initApplication(HEARTBEAT, CLASSNAME);
         this.accountName = accountName;
+
         services = new BetfairServices(sessionToken, accountName);
-        factory = new FactoryBet(accountName);
+        try {
+            AccountDetailsResponse accountDetails = services.getAccountDetails();
+            currency = accountDetails.getCurrencyCode();
+        } catch (APINGException e) {
+            Log.logMessage(CLASSNAME, METHOD, "Could not get account details from Betfair", LogLevelEnum.CRITICAL, true);
+            System.exit(0);
+        }
+
+        factory = new FactoryBet(accountName, currency);
         dbServcies = new DBServices(false);
         connBet = new DBBet(Source.BETFAIR.getName(), accountName);
     }
