@@ -60,7 +60,7 @@ public class MoneyMaker {
                 System.exit(0);
             }
         } else {
-            dLogin(ACCOUNTREADER);
+            dLogin(PRICEREADER);
         }
     }
 
@@ -288,7 +288,7 @@ public class MoneyMaker {
             try {
                 String betfairSession = Account.getInstance().login(config.get(ConfigEnum.BF_USER_DJ78351), config.get(ConfigEnum.BF_PASS_DJ78351));
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                String date = "2015-10-01";
+                String date = "2015-11-11";
                 Date from = df.parse(date);
                 AccountReader accountReader = new AccountReader(Account.getInstance().getUsername(), betfairSession, from);
                 Thread t = new Thread(accountReader);

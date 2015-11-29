@@ -10,8 +10,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import se.betfair.api.BetfairServices;
 import se.betfair.factory.FactoryAccount;
 import se.betfair.factory.FactoryBet;
@@ -35,7 +33,7 @@ import se.moneymaker.util.Utils;
 public class AccountReader extends Application implements Runnable {
 
     private final String CLASSNAME = AccountReader.class.getName();
-    private final static long HEARTBEAT = 3600000; //60 minutes
+    private final static long HEARTBEAT = 7200000; //2 hours
     public final static String MERGED_CANCELLED = "MoneyMakeerMergedCancelled";
     private DBBet connBet;
     private DBAccount connAccount;
@@ -98,7 +96,7 @@ public class AccountReader extends Application implements Runnable {
                     today = new Date(Utils.parseStringToLongDate(df.format(new Date()), df));
                     Calendar cal = Calendar.getInstance();
                     cal.setTime(today);
-                    cal.add(Calendar.HOUR, -6);
+                    cal.add(Calendar.HOUR, -3);
                     today = cal.getTime();
                 }
                 TimeRange range = new TimeRange();
@@ -121,7 +119,6 @@ public class AccountReader extends Application implements Runnable {
                 cancelledOrders = keepNew(true, cancelledOrders);
 
                 iAmAlive();
-
                 //If not empty then merge might be needed
                 List<ClearedOrderSummary> laspedOrdersTmp = new ArrayList<>();
                 if (!lapsedOrders.isEmpty() && !settledOrders.isEmpty()) {
@@ -187,7 +184,6 @@ public class AccountReader extends Application implements Runnable {
                     }
 
                     iAmAlive();
-
                     //Commission data   
                     if (status.equals(BetStatus.SETTLED) && !clearedOrders.isEmpty()) {
                         orderSummaryReport = services.listClearedOrders(null, BetStatus.SETTLED, range, MarketGroupBy.MARKET);
@@ -327,12 +323,20 @@ public class AccountReader extends Application implements Runnable {
 
     private List<ClearedOrderSummary> updateBetsWithCommission(List<ClearedOrderSummary> clearedOrders, List<ClearedOrderSummary> commissions) {
         for (ClearedOrderSummary commission : commissions) {
-            for (ClearedOrderSummary bet : clearedOrders) {
-                if (bet.getMarketId().equals(commission.getMarketId())
-                        && bet.getProfit() > 0
-                        && commission.getCommission() > 0) {
-                    bet.setCommission(commission.getCommission());
-                    break;
+            if (commission.getCommission() > 0) {
+                ClearedOrderSummary betWithCommission = null;
+                double biggestProfit = 0;
+
+                for (ClearedOrderSummary bet : clearedOrders) {
+                    if (bet.getMarketId().equals(commission.getMarketId())
+                            && bet.getProfit() > biggestProfit) {
+                        biggestProfit = bet.getProfit();
+                        betWithCommission = bet;
+                    }
+                }
+
+                if (betWithCommission != null) {
+                    betWithCommission.setCommission(commission.getCommission());
                 }
             }
         }

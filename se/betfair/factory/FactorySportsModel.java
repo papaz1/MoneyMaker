@@ -112,6 +112,8 @@ public class FactorySportsModel {
 
                     if (betOffer.getMaxNumberOfOutcomes() == betOffer.getOutcomes().size()) {
                         betOffer.setPayback(Utils.calculateBetOfferPayback(betOffer.getOutcomes()));
+                    } else {
+                        throw new BetofferExcludedException("Betoffer: " + betOffer.getName() + " external key: " + betOffer.getExternalKey() + " exxluded due to all outcomes don't exist");
                     }
                     match.addBetOffer(betOffer);
                     matches.add(match);

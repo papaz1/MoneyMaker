@@ -39,6 +39,7 @@ public class DBSportsModel {
     //This constructor is only relevant for services
     public DBSportsModel() {
         services = new DBServices(true);
+        matchesNotFound = new HashSet<>();
     }
 
     //This constructor is only relevant for applications
@@ -150,6 +151,11 @@ public class DBSportsModel {
         //numberOfAttempts times.
         int numberOfAttempts = 0;
         boolean success = false;
+        if (matchesNotFound.contains(matchCopy.getExternalKey())) {
+            DBConnectionException dbException = new DBConnectionException();
+            dbException.setErrorType(DBErrorType.MATCH_NOT_FOUND.toString());
+            throw dbException;
+        }
         while (!success) {
             try {
                 if (matchCopy.getPk() < 1) {
@@ -159,11 +165,11 @@ public class DBSportsModel {
                 success = true;
             } catch (DBConnectionException e) {
                 if (matchesNotFound != null
-                        && !matchesNotFound.contains(match.getExternalKey())
+                        && !matchesNotFound.contains(matchCopy.getExternalKey())
                         && e.getErrorType().equals(DBErrorType.MATCH_NOT_FOUND.toString())) {
-                    matchesNotFound.add(match.getExternalKey());
+                    matchesNotFound.add(matchCopy.getExternalKey());
                     StringBuilder sb = new StringBuilder();
-                    sb.append("Event date: ").append(match.getEventDate()).append(" Teams: ").append(match.getHome()).append(" vs ").append(match.getAway());
+                    sb.append("Event date: ").append(matchCopy.getEventDate()).append(" Teams: ").append(matchCopy.getHome()).append(" vs ").append(matchCopy.getAway());
                     List<String> matchesNotFoundList = new ArrayList<>(1);
                     matchesNotFoundList.add(sb.toString());
                     Utils.writeToFile(matchesNotFoundList, matchesNotFoundInDBFile);

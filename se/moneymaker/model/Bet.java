@@ -46,7 +46,7 @@ public class Bet {
     }
 
     public void setUnexpectedMinusLocal(double unexpectedMinusLocal) {
-        this.unexpectedMinusLocal = Math.abs(unexpectedMinusLocal);
+        this.unexpectedMinusLocal = unexpectedMinusLocal;
     }
 
     public Bet(String bookmaker, String accountName) {

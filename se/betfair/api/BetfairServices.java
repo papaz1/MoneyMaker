@@ -267,8 +267,9 @@ public class BetfairServices {
         boolean hasMore = true;
         List<ClearedOrderSummary> orderSummary = new ArrayList<>();
         Set<String> betIdsTmp = new HashSet<>();
-        betIdsTmp.add("56767621133");
-        betIds = betIdsTmp;
+
+        //betIdsTmp.add("57989602104");
+        //betIds = betIdsTmp;
         if (connectionClearedOrders == null) {
             connectionClearedOrders = new Connection(URL_RPC_SERVICES_BETTING, accountName);
         }
@@ -411,7 +412,7 @@ public class BetfairServices {
             connectionAccoundDetails = new Connection(URL_RPC_SERVICES_ACCOUNT, accountName);
         }
         Map<String, Object> params = new HashMap<>();
-        String result = makeRequest(ApiNgOperation.GET_ACCOUNT_FUNDS, params, connectionAccountFunds, ACCOUNT_DETAILS_DELAY);
+        String result = makeRequest(ApiNgOperation.GET_ACCOUNT_DETAILS, params, connectionAccoundDetails, ACCOUNT_DETAILS_DELAY);
         AccountDetailsResponseContainer container = JsonConverter.convertFromJson(result, AccountDetailsResponseContainer.class);
 
         if (container.getError() != null) {

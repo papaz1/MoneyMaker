@@ -129,7 +129,7 @@ public class PriceReader extends Application implements Runnable {
             marketTypeCodes.add(marketTypeCodeOverUnder6);
             marketTypeCodeCorrectScore = new HashSet<>();
             marketTypeCodeCorrectScore.add(Common.MARKET_TYPE_CORRECT_SCORE);
-            //marketTypeCodes.add(marketTypeCodeCorrectScore);
+            marketTypeCodes.add(marketTypeCodeCorrectScore);
         } else {
             marketCatalgouesMap = new HashMap<>();
         }

@@ -137,7 +137,6 @@ public class FactoryBet {
         } else if (status.equals(BetStatus.CANCELLED)) {
             betfairBet.setSizeCancelled(order.getSizeCancelled());
         } else {
-            //Bets could have been merged so there might be a 
             betfairBet.setSizeMatched(order.getSizeSettled());
         }
 
@@ -205,46 +204,37 @@ public class FactoryBet {
             }
         }
 
-        bet.setRequestedStakeLocal(Utils.parseDouble(SCALE, stakeScalerMatched * betfairBet.getRequestedStakeLocal()));
+        bet.setRequestedStakeLocal(stakeScalerMatched * betfairBet.getRequestedStakeLocal());
 
         //Has anything been matched?
         if (betfairBet.getSizeMatched() > 0) {
             bet.setMatchedOdds(betfairBet.getAveragePriceMatched());
-            bet.setMatchedStakeLocal(Utils.parseDouble(SCALE, stakeScalerMatched * betfairBet.getSizeMatched()));
+            bet.setMatchedStakeLocal(stakeScalerMatched * betfairBet.getSizeMatched());
         }
 
         //Is there anything that is still unmatched?
         if (betfairBet.getSizeRemaining() > 0) {
-            bet.setUnmatchedStakeLocal(Utils.parseDouble(SCALE, stakeScalerMatched * betfairBet.getSizeRemaining()));
+            bet.setUnmatchedStakeLocal(stakeScalerMatched * betfairBet.getSizeRemaining());
         }
 
         //Has any portion of the bet been canceled?
         if (betfairBet.getSizeCancelled() > 0) {
-            bet.setCanceledStakeLocal(Utils.parseDouble(SCALE, stakeScalerMatched * betfairBet.getSizeCancelled()));
+            bet.setCanceledStakeLocal(stakeScalerMatched * betfairBet.getSizeCancelled());
         }
 
-        //Has any portion of the bet lapsed?
+        //Has any portion of the bet lapsed or is anything left after the bet is closed?
         if (betfairBet.getSizeLapsed() > 0) {
-            bet.setRestStakeLocal(Utils.parseDouble(SCALE, bet.getRequestedStakeLocal() - bet.getMatchedStakeLocal()));
-            //bet.setRestStakeLocal(Utils.parseDouble(SCALE, stakeScalerMatched * betfairBet.getSizeLapsed()));
+            bet.setRestStakeLocal(bet.getRequestedStakeLocal() - bet.getMatchedStakeLocal());
         }
 
         //Has the bet been voided?
         if (betfairBet.getSizeVoided() > 0) {
-            bet.setCanceledStakeLocal(Utils.parseDouble(SCALE, stakeScalerMatched * betfairBet.getSizeVoided()));
+            bet.setCanceledStakeLocal(stakeScalerMatched * betfairBet.getSizeVoided());
         }
 
         //If there is a profit then there is a paidout amount
         if (betfairBet.getProfit() > 0) {
-            bet.setPaidOutLocal(Utils.parseDouble(SCALE, bet.getMatchedStakeLocal() + betfairBet.getProfit()));
-        } else if (betfairBet.getProfit() < 0) {
-            double betfairValue = Math.abs(betfairBet.getProfit());
-            double diff = Utils.parseDouble(SCALE, bet.getMatchedStakeLocal() - betfairValue);
-            if (diff > 0) {
-                bet.setUnexpectedPlusLocal(diff);
-            } else if (diff < 0) {
-                bet.setUnexpectedMinusLocal(diff);
-            }
+            bet.setPaidOutLocal(bet.getMatchedStakeLocal() + betfairBet.getProfit());
         }
 
         //Update the status on the bet
@@ -256,13 +246,19 @@ public class FactoryBet {
                 || betfairBet.getProfit() != 0) {//Profit can be both positive and negative
             bet.setState(BetStateEnum.SETTLED);
 
-            //After everything has been set on the bet check if there is any rest stake 
-            if (bet.getRequestedStakeLocal() > 0) {//This will only exist for bets that exist in the DB
-                //if(bet.getRequestedStakeLocal() > bet.getMatchedStakeLocal())
-            }
         } else {
             bet.setState(BetStateEnum.PENDING);
         }
+
+        //Round to two decimals
+        bet.setRequestedStakeLocal(Utils.parseDouble(SCALE, bet.getRequestedStakeLocal()));
+        bet.setMatchedStakeLocal(Utils.parseDouble(SCALE, bet.getMatchedStakeLocal()));
+        bet.setCanceledStakeLocal(Utils.parseDouble(SCALE, bet.getCanceledStakeLocal()));
+        bet.setUnmatchedStakeLocal(Utils.parseDouble(SCALE, bet.getUnmatchedStakeLocal()));
+        bet.setUnexpectedPlusLocal(Utils.parseDouble(SCALE, bet.getUnexpectedPlusLocal()));
+        bet.setUnexpectedMinusLocal(Utils.parseDouble(SCALE, bet.getUnexpectedMinusLocal()));
+        bet.setRestStakeLocal(Utils.parseDouble(SCALE, bet.getRestStakeLocal()));
+        bet.setPaidOutLocal(Utils.parseDouble(SCALE, bet.getPaidOutLocal()));
 
         return bet;
     }

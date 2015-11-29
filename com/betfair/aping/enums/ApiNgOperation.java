@@ -2,6 +2,7 @@ package com.betfair.aping.enums;
 
 public enum ApiNgOperation {
 
+    GET_ACCOUNT_DETAILS("getAccountDetails", "AccountAPING/v1.0/"),
     GET_ACCOUNT_FUNDS("getAccountFunds", "AccountAPING/v1.0/"),
     GET_ACCOUNT_STATEMENT("getAccountStatement", "AccountAPING/v1.0/"),
     LISTCLEAREDORDERS("listClearedOrders", "SportsAPING/v1.0/"),
