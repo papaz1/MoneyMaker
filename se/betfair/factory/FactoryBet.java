@@ -113,7 +113,7 @@ public class FactoryBet {
                     betfairBet.setSide(Side.LAY);
                 }
 
-                Bet bet = updateBet(new Bet(Source.BETFAIR.getName(), betInstruction.getAccount().getAccountName()), betfairBet);
+                Bet bet = updateBet(new Bet(Source.BETFAIR.getName(), betInstruction.getAccount().getAccountName()), betfairBet, false);
                 bets.add(bet);
             } else {
                 throw new BetException("BetId returned null by Betfair. Bet not accepted by Betfair for unknown reason.", ErrorType.UNKNOWN_ERROR);
@@ -123,6 +123,8 @@ public class FactoryBet {
     }
 
     private Bet updateClearedBet(ClearedOrderSummary order, BetStatus status, String pk) {
+        boolean noStakeScalerOnMatched = false;
+
         BetfairBet betfairBet = new BetfairBet(order.getBetId());
         betfairBet.setCurrenyCode(currency);
         betfairBet.setMarketId(order.getMarketId());
@@ -137,7 +139,8 @@ public class FactoryBet {
         } else if (status.equals(BetStatus.CANCELLED)) {
             betfairBet.setSizeCancelled(order.getSizeCancelled());
         } else {
-            betfairBet.setSizeMatched(order.getSizeSettled());
+            betfairBet.setSizeMatched(Math.abs(order.getProfit()));
+            noStakeScalerOnMatched = true;
         }
 
         //Check if this is a merged cancelled bet and in that case set the sizeCancelled field
@@ -156,7 +159,7 @@ public class FactoryBet {
         betfairBet.setCommission(order.getCommission());
         Bet bet = new Bet(Source.BETFAIR.getName(), accountName);
         bet.setPk(pk);
-        return updateBet(bet, betfairBet);
+        return updateBet(bet, betfairBet, noStakeScalerOnMatched);
     }
 
     private Bet updateCurrentBet(CurrentOrderSummary order, Bet bet) {
@@ -174,10 +177,10 @@ public class FactoryBet {
         betfairBet.setSizeLapsed(order.getSizeLapsed());
         betfairBet.setSizeVoided(order.getSizeVoided());
         betfairBet.setSide(order.getSide());
-        return updateBet(bet, betfairBet);
+        return updateBet(bet, betfairBet, false);
     }
 
-    private Bet updateBet(Bet bet, BetfairBet betfairBet) {
+    private Bet updateBet(Bet bet, BetfairBet betfairBet, boolean noStakeScalerOnMatched) {
 
         //Common fields for all statuses
         bet.setPk(bet.getPk());
@@ -209,7 +212,11 @@ public class FactoryBet {
         //Has anything been matched?
         if (betfairBet.getSizeMatched() > 0) {
             bet.setMatchedOdds(betfairBet.getAveragePriceMatched());
-            bet.setMatchedStakeLocal(stakeScalerMatched * betfairBet.getSizeMatched());
+            if (!noStakeScalerOnMatched) {
+                bet.setMatchedStakeLocal(stakeScalerMatched * betfairBet.getSizeMatched());
+            } else {
+                bet.setMatchedStakeLocal(betfairBet.getSizeMatched());
+            }
         }
 
         //Is there anything that is still unmatched?
@@ -237,6 +244,7 @@ public class FactoryBet {
             bet.setPaidOutLocal(bet.getMatchedStakeLocal() + betfairBet.getProfit());
         }
 
+        //Requested = Matched + Unmatched + Canceled + Rest
         //Update the status on the bet
         if (bet.getUnmatchedStakeLocal() > 0) {
             bet.setState(BetStateEnum.UNMATCHED);
