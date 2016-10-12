@@ -31,7 +31,7 @@ public class DBSportsModel {
 
     private final String CLASSNAME = DBSportsModel.class.getName();
     private final DBServices services;
-    private Set<String> matchesNotFound;
+    private final Set<String> matchesNotFound;
     private File matchesNotFoundInDBFile;
     private Source source;
     public static int tmpCounter;

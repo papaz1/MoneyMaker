@@ -1,15 +1,5 @@
 package se.betfair.enums;
 
-/*
- * Enum for event type
- *
- *------------------------------------------------------------------------------
- * Change History
- *------------------------------------------------------------------------------
- * Version      Date         Author          Comments
- *------------------------------------------------------------------------------
- * 1.0          2011-apr-08  Baran Sölen     Initial version
- */
 public enum EventTypeEnum {
 
     ALL(-1, "All"),

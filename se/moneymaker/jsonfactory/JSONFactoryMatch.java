@@ -30,23 +30,23 @@ public class JSONFactoryMatch {
     private static final String KEY_UTC_TIME = "utcTime";
     private static final String KEY_REFERENCE = "reference";
     private static final String KEY_POOLTYPE_NAME = "poolType__name";
+    private static final String KEY_EVENGROUP_NAME = "eventGroup__name";
     private static final String KEY_POOL = "pool";
 
     public static JSONObject createMatch(Match match) {
+
         JSONObject matchJSON = new JSONObject();
         Calendar min = Calendar.getInstance();
         min.setTime(match.getEventDate());
-        min.add(Calendar.HOUR_OF_DAY, -11);
+        min.add(Calendar.HOUR_OF_DAY, -4);
         Date utcMin = min.getTime();
 
         Calendar max = Calendar.getInstance();
         max.setTime(match.getEventDate());
-        max.add(Calendar.HOUR_OF_DAY, 11);
+        max.add(Calendar.HOUR_OF_DAY, 4);
         Date utcMax = max.getTime();
 
         matchJSON.put(JSONKeyNames.KEY_UTC_SCHEDULED, Utils.dateToString(match.getEventDate()));
-        matchJSON.put(KEY_HOME, match.getHome());
-        matchJSON.put(KEY_AWAY, match.getAway());
         matchJSON.put(KEY_UTC_MIN, Utils.dateToString(utcMin));
         matchJSON.put(KEY_UTC_MAX, Utils.dateToString(utcMax));
 
@@ -64,6 +64,7 @@ public class JSONFactoryMatch {
         if (match.getPoolType() != null) {
             pool = new JSONObject();
             pool.put(KEY_POOLTYPE_NAME, match.getPoolType().name());
+            pool.put(KEY_EVENGROUP_NAME, match.getEventGroupName());
             matchJSON.put(KEY_POOL, pool);
         }
 

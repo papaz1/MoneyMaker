@@ -2,41 +2,41 @@ package se.moneymaker.model;
 
 public class MatchReference {
 
-    private MatchReferenceInfo home;
-    private MatchReferenceInfo away;
-    private MatchReferenceInfo pool;
-    private MatchReferenceInfo event;
+    private MatchReferenceInfo homeTeamRef;
+    private MatchReferenceInfo awayTeamRef;
+    private MatchReferenceInfo poolRef;
+    private MatchReferenceInfo eventRef;
 
     public MatchReferenceInfo getHome() {
-        return home;
+        return homeTeamRef;
     }
 
     public void setHome(MatchReferenceInfo home) {
-        this.home = home;
+        this.homeTeamRef = home;
     }
 
     public MatchReferenceInfo getAway() {
-        return away;
+        return awayTeamRef;
     }
 
     public void setAway(MatchReferenceInfo away) {
-        this.away = away;
+        this.awayTeamRef = away;
     }
 
     public MatchReferenceInfo getPool() {
-        return pool;
+        return poolRef;
     }
 
     public void setPool(MatchReferenceInfo pool) {
-        this.pool = pool;
+        this.poolRef = pool;
     }
 
     public MatchReferenceInfo getEvent() {
-        return event;
+        return eventRef;
     }
 
     public void setEvent(MatchReferenceInfo event) {
-        this.event = event;
+        this.eventRef = event;
     }
 
 }

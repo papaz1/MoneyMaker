@@ -68,8 +68,8 @@ public class Outcome {
         this.win = win;
     }
 
-    public void setID(long ID) {
-        this.externalKey = ID;
+    public void setExternalKey(long externalKey) {
+        this.externalKey = externalKey;
     }
 
     public void setName(String name) {

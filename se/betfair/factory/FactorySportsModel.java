@@ -1,10 +1,12 @@
 package se.betfair.factory;
 
+import com.sun.org.apache.xalan.internal.xsltc.compiler.util.MatchGenerator;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import se.betfair.enums.EventTypeEnum;
 import se.betfair.model.MarketBook;
 import se.betfair.model.MarketCatalogue;
 import se.betfair.model.PriceSize;
@@ -13,6 +15,7 @@ import se.betfair.model.RunnerCatalog;
 import se.moneymaker.db.DBServices;
 import se.moneymaker.dict.Config;
 import se.moneymaker.dict.BetOfferDict;
+import se.moneymaker.dict.TeamDict;
 import se.moneymaker.enums.BetOfferTypeEnum;
 import se.moneymaker.enums.ConfigEnum;
 import se.moneymaker.enums.LogLevelEnum;
@@ -30,6 +33,7 @@ import se.moneymaker.enums.ReadReason;
 import se.moneymaker.enums.Source;
 import se.moneymaker.exception.DBConnectionException;
 import se.moneymaker.exception.MatchException;
+import se.moneymaker.model.KeyValuePair;
 import se.moneymaker.model.MatchReference;
 import se.moneymaker.model.MatchReferenceInfo;
 import se.moneymaker.util.Log;
@@ -42,6 +46,7 @@ public class FactorySportsModel {
     private ReadReason readReason;
     private double minuteWeight;
     private String currency;
+    EventTypeEnum sport;
 
     public ReadReason getReadReason() {
         return readReason;
@@ -59,8 +64,9 @@ public class FactorySportsModel {
         this.minuteWeight = minuteWeight;
     }
 
-    public FactorySportsModel() {
+    public FactorySportsModel(EventTypeEnum sport) {
         final String METHOD = "FactorySportsModel";
+        this.sport = sport;
         config = Config.getInstance();
         DBServices services = new DBServices(true);
         try {
@@ -131,17 +137,35 @@ public class FactorySportsModel {
         return matches;
     }
 
+    private MatchReference createMatchReference(Match match) {
+        MatchReference matchReference = new MatchReference();
+        matchReference.setHome(new MatchReferenceInfo(Source.BETFAIR.getName(), match.getHomeExternalKey(), match.getHome()));
+        matchReference.setAway(new MatchReferenceInfo(Source.BETFAIR.getName(), match.getAwayExternalKey(), match.getAway()));
+        matchReference.setPool(new MatchReferenceInfo(Source.BETFAIR.getName(), match.getPoolExternalKey(), match.getPoolName()));
+        matchReference.setEvent(new MatchReferenceInfo(Source.BETFAIR.getName(), match.getExternalKey(), match.getEventName()));
+        return matchReference;
+    }
+
     private Match createMatch(MarketCatalogue marketCatalogue) throws ParseException, BetofferExcludedException, MatchException {
+        if (marketCatalogue.getCompetition() == null) {
+            throw new BetofferExcludedException("Competition is null");
+        }
         Match match = new Match();
         match.setSource(Source.BETFAIR.getName());
         match.setExternalKey(marketCatalogue.getEvent().getId());
+        match.setEventGroupName(sport.getName());
+        match.setEventName(marketCatalogue.getEvent().getName());
         match.setEventDate((marketCatalogue.getMarketStartTime()));
+        match.setPoolName(marketCatalogue.getCompetition().getName());
+        match.setPoolExternalKey(marketCatalogue.getCompetition().getId());
 
         List<String> tmpTeams = new ArrayList<>(1);
         tmpTeams.add(marketCatalogue.getEvent().getName());
         String[] teams = FactoryUtil.parseTeams(tmpTeams);
-        match.setHome(teams[0].trim());
-        match.setAway(teams[1].trim());
+        match.setHomeTeam(teams[0].trim());
+        match.setAwayTeam(teams[1].trim());
+        match.setHomeExternalKey(TeamDict.get(match.getHome()));
+        match.setAwayExternalKey(TeamDict.get(match.getAway()));
 
         if (match.getHome().toUpperCase().contains("U1")
                 || match.getHome().toUpperCase().contains("U2")
@@ -150,18 +174,7 @@ public class FactorySportsModel {
         } else if (match.getHome().toUpperCase().contains("(W)")) {
             match.setPoolType(PoolType.FEMALE);
         }
-
-        /*
-         MatchReference matchReference = new MatchReference();
-         matchReference.setHome(new MatchReferenceInfo(Source.BETFAIR.getName(), match.getHome(), match.getHome()));
-         matchReference.setAway(new MatchReferenceInfo(Source.BETFAIR.getName(), match.getAway(), match.getAway()));
-         if (marketCatalogue.getCompetition() == null) {
-         throw new BetofferExcludedException("Competition is null");
-         }
-         matchReference.setPool(new MatchReferenceInfo(Source.BETFAIR.getName(), marketCatalogue.getCompetition().getName(), marketCatalogue.getCompetition().getName()));
-         matchReference.setEvent(new MatchReferenceInfo(Source.BETFAIR.getName(), match.getExternalKey(), marketCatalogue.getEvent().getName()));
-         match.setReference(matchReference);
-         */
+        match.setReference(createMatchReference(match));
         return match;
     }
 
@@ -207,7 +220,7 @@ public class FactorySportsModel {
     private Outcome createOutcome(RunnerCatalog runnerCatalog, String home, String away, BetOfferTypeEnum betOfferType) throws OutcomeException {
         Outcome outcome = new Outcome();
         outcome.setSource(Source.BETFAIR.getName());
-        outcome.setID(runnerCatalog.getSelectionId());
+        outcome.setExternalKey(runnerCatalog.getSelectionId());
         outcome.setName(runnerCatalog.getRunnerName());
         outcome.setItem(FactoryBetOfferOutcomeItem.parseOutcomeItem(betOfferType, home, away, runnerCatalog.getRunnerName()));
         return outcome;

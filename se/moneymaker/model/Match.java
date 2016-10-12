@@ -9,9 +9,10 @@ public class Match {
 
     private List<BetOffer> betOffers = new ArrayList<>();
     private String externalKey;
+    private String eventGroupName;
     private Date eventDate;
-    private String homeTeam;
-    private String awayTeam;
+    private String home;
+    private String away;
     private long Pk;
     private int homeScore = -1; //-1 means no score has been set which is better than 0 which is a valid score
     private int awayScore = -1;
@@ -22,6 +23,59 @@ public class Match {
     private String source;
     private MatchReference reference;
     private PoolType poolType;
+    private String eventName;
+    private String poolName;
+    private String poolExternalKey;
+    private String homeExternalKey;
+    private String awayExternalKey;
+
+    public String getEventGroupName() {
+        return eventGroupName;
+    }
+
+    public void setEventGroupName(String eventGroupName) {
+        this.eventGroupName = eventGroupName;
+    }
+
+    public String getHomeExternalKey() {
+        return homeExternalKey;
+    }
+
+    public void setHomeExternalKey(String homeExternalKey) {
+        this.homeExternalKey = homeExternalKey;
+    }
+
+    public String getAwayExternalKey() {
+        return awayExternalKey;
+    }
+
+    public void setAwayExternalKey(String awayExternalKey) {
+        this.awayExternalKey = awayExternalKey;
+    }
+
+    public String getPoolName() {
+        return poolName;
+    }
+
+    public void setPoolName(String poolName) {
+        this.poolName = poolName;
+    }
+
+    public String getPoolExternalKey() {
+        return poolExternalKey;
+    }
+
+    public void setPoolExternalKey(String poolExternalKey) {
+        this.poolExternalKey = poolExternalKey;
+    }
+
+    public String getEventName() {
+        return eventName;
+    }
+
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
+    }
 
     public PoolType getPoolType() {
         return poolType;
@@ -71,12 +125,12 @@ public class Match {
         this.Pk = Pk;
     }
 
-    public void setHome(String homeTeam) {
-        this.homeTeam = homeTeam;
+    public void setHomeTeam(String homeTeam) {
+        this.home = homeTeam;
     }
 
-    public void setAway(String awayTeam) {
-        this.awayTeam = awayTeam;
+    public void setAwayTeam(String awayTeam) {
+        this.away = awayTeam;
     }
 
     public void setEventDate(Date eventDate) {
@@ -100,11 +154,11 @@ public class Match {
     }
 
     public String getHome() {
-        return homeTeam;
+        return home;
     }
 
     public String getAway() {
-        return awayTeam;
+        return away;
     }
 
     public int getHomeScore() {

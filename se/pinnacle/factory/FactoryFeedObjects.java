@@ -112,9 +112,9 @@ public class FactoryFeedObjects extends DefaultHandler {
             startDateTime = parseDate(startDateTime);
             match.setEventDate(Utils.stringToDate(startDateTime));
         } else if (bHomeTeam & endName.equals(XMLTags.HOME_TEAM)) {
-            match.setHome(team);
+            match.setHomeTeam(team);
         } else if (bAwayTeam & endName.equals(XMLTags.AWAY_TEAM)) {
-            match.setAway(team);
+            match.setAwayTeam(team);
         } else if (bHomeTeam & endName.equals(XMLTags.SCORE)) {
             match.setHomeScore(Integer.parseInt(score));
         } else if (bAwayTeam & endName.equals(XMLTags.SCORE)) {

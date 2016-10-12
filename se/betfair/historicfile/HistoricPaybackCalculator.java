@@ -406,7 +406,7 @@ public class HistoricPaybackCalculator {
                 //timestamp. For each row in the timestamp each outcome
                 //can only be represented once.
                 newOutcome = new Outcome();
-                newOutcome.setID(outcome.getExternalKey());
+                newOutcome.setExternalKey(outcome.getExternalKey());
                 newOutcome.setItem(outcome.getItem());
                 newOutcome.addPrice(price);
                 timeline.put(dip, newOutcome);

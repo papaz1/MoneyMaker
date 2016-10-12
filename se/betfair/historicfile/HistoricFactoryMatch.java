@@ -107,8 +107,8 @@ public class HistoricFactoryMatch {
 
     protected Match createMatch(Market market) {
         Match match = new Match();
-        match.setHome(market.getHome());
-        match.setAway(market.getAway());
+        match.setHomeTeam(market.getHome());
+        match.setAwayTeam(market.getAway());
         match.setEventDate(market.getEventDate());
 
         return match;
@@ -206,7 +206,7 @@ public class HistoricFactoryMatch {
     private static Outcome createOutcome(BetOfferTypeEnum betOfferType, String home, String away, BMHistoricRunner historicRunner) throws OutcomeException {
         Outcome outcome = new Outcome();
         outcome.setSource(Source.BETFAIR.getName());
-        outcome.setID(Integer.parseInt(historicRunner.getSelectionId()));
+        outcome.setExternalKey(Integer.parseInt(historicRunner.getSelectionId()));
         outcome.setName(historicRunner.getSelection());
         outcome.setItem(FactoryBetOfferOutcomeItem.parseOutcomeItem(betOfferType, home, away, historicRunner.getSelection()));
         boolean win = Utils.stringToBoolean(historicRunner.isWin());

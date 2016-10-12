@@ -14,17 +14,21 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import se.betfair.api.BetfairServices;
 import se.betfair.api.Common;
+import se.betfair.config.BCOutcomeNameEnum;
+import se.betfair.enums.EventTypeEnum;
 import se.betfair.enums.MarketStatus;
 import se.betfair.factory.FactorySportsModel;
 import se.betfair.model.MarketBook;
 import se.betfair.model.MarketCatalogue;
 import se.betfair.model.MarketFilter;
 import se.betfair.model.PriceProjection;
+import se.betfair.model.RunnerCatalog;
 import se.betfair.model.TimeRange;
 import se.moneymaker.db.DBServices;
 import se.moneymaker.dict.Config;
 import se.moneymaker.db.DBSportsModel;
 import se.moneymaker.dict.BetOfferDict;
+import se.moneymaker.dict.TeamDict;
 import se.moneymaker.enums.ConfigEnum;
 import se.moneymaker.enums.DBErrorType;
 import se.moneymaker.enums.LogLevelEnum;
@@ -35,6 +39,7 @@ import se.moneymaker.exception.BetOfferException;
 import se.moneymaker.exception.DBConnectionException;
 import se.moneymaker.exception.ErrorType;
 import se.moneymaker.model.BetOffer;
+import se.moneymaker.model.KeyValuePair;
 import se.moneymaker.model.Match;
 import se.moneymaker.model.Outcome;
 import se.moneymaker.util.Log;
@@ -80,7 +85,7 @@ public class PriceReader extends Application implements Runnable {
         this.sessionToken = sessionToken;
         initCommonAttributes();
         initMarketProjection();
-        factory = new FactorySportsModel();
+        factory = new FactorySportsModel(EventTypeEnum.SOCCER);
         factory.setReadReason(readReason);
         factory.setMinuteWeight(minuteWeight);
         df = new SimpleDateFormat("yyyyMMdd");
@@ -157,6 +162,10 @@ public class PriceReader extends Application implements Runnable {
                             marketCatalogues = new ArrayList<>();
                         }
                         marketCatalogues.addAll(tmpMarketCatalogues);
+                        if (marketTypeCode.contains(Common.MARKET_TYPE_MATCH_ODDS)) {
+                            List<KeyValuePair> keyValuePairs = parseTeams(marketCatalogues);
+                            TeamDict.putAll(keyValuePairs);
+                        }
                     }
                 }
                 iAmAlive();
@@ -472,5 +481,27 @@ public class PriceReader extends Application implements Runnable {
             }
         }
         return tmpMarketBooks;
+    }
+
+    /**
+     * Only MATCH_ODDS should be sent in to this method since its purpose is to
+     * get the team name and the corresponding id.
+     *
+     *
+     * @param catalogues
+     * @return
+     */
+    private List<KeyValuePair> parseTeams(List<MarketCatalogue> catalogues) {
+        List<KeyValuePair> keyValuePairs = new ArrayList<>();
+        for (MarketCatalogue catalgue : catalogues) {
+            List<RunnerCatalog> runnerCatalogs = catalgue.getRunners();
+            for (RunnerCatalog runnerCatalog : runnerCatalogs) {
+                if (!runnerCatalog.getRunnerName().equalsIgnoreCase(BCOutcomeNameEnum.DRAW.getOriginalName())) {
+                    KeyValuePair keyValuePair = new KeyValuePair(runnerCatalog.getRunnerName(), Long.toString(runnerCatalog.getSelectionId()));
+                    keyValuePairs.add(keyValuePair);
+                }
+            }
+        }
+        return keyValuePairs;
     }
 }
