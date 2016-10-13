@@ -12,12 +12,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import se.betfair.api.BetfairServices;
 import se.betfair.api.Common;
 import se.betfair.config.BCOutcomeNameEnum;
 import se.betfair.enums.EventTypeEnum;
 import se.betfair.enums.MarketStatus;
 import se.betfair.factory.FactorySportsModel;
+import se.betfair.model.DeveloperApp;
 import se.betfair.model.MarketBook;
 import se.betfair.model.MarketCatalogue;
 import se.betfair.model.MarketFilter;
@@ -164,6 +167,7 @@ public class PriceReader extends Application implements Runnable {
                         marketCatalogues.addAll(tmpMarketCatalogues);
                         if (marketTypeCode.contains(Common.MARKET_TYPE_MATCH_ODDS)) {
                             List<KeyValuePair> keyValuePairs = parseTeams(marketCatalogues);
+                            TeamDict.clear();
                             TeamDict.putAll(keyValuePairs);
                         }
                     }

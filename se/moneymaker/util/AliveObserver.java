@@ -6,7 +6,7 @@ public class AliveObserver implements Runnable {
 
     private static final String CLASSNAME = AliveObserver.class.getName();
     private final long TIME_SLEEP = 300000; //5 minutes
-    private AliveLog log;
+    private final AliveLog log;
     private boolean run;
 
     public AliveObserver(AliveLog log) {

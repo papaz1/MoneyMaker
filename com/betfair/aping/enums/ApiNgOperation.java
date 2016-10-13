@@ -5,6 +5,7 @@ public enum ApiNgOperation {
     GET_ACCOUNT_DETAILS("getAccountDetails", "AccountAPING/v1.0/"),
     GET_ACCOUNT_FUNDS("getAccountFunds", "AccountAPING/v1.0/"),
     GET_ACCOUNT_STATEMENT("getAccountStatement", "AccountAPING/v1.0/"),
+    GET_DEVELOPER_APP_KEYS("getDeveloperAppKeys", "AccountAPING/v1.0/"),
     LISTCLEAREDORDERS("listClearedOrders", "SportsAPING/v1.0/"),
     LISTCURRENTORDERS("listCurrentOrders", "SportsAPING/v1.0/"),
     LISTEVENTTYPES("listEventTypes", "SportsAPING/v1.0/"),

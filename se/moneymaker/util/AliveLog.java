@@ -16,10 +16,10 @@ import se.moneymaker.enums.LogLevelEnum;
 public final class AliveLog {
 
     private static final String CLASSNAME = AliveLog.class.getName();
-    private long heartbeat;
+    private final long heartbeat;
     private long reportTime;
-    private String message;
-    private String application;
+    private final String message;
+    private final String application;
 
     public AliveLog(long heartbeat, String application) {
         this.heartbeat = heartbeat;

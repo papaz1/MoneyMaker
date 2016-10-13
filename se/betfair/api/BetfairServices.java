@@ -7,6 +7,7 @@ import com.betfair.aping.containers.CancelOrdersContainer;
 import com.betfair.aping.containers.ClearedOrderSummaryReportContainer;
 import se.betfair.model.ClearedOrderSummaryReport;
 import com.betfair.aping.containers.CurrentOrderSummaryReportContainer;
+import com.betfair.aping.containers.DeveloperAppContainer;
 import com.betfair.aping.containers.ListMarketBooksContainer;
 import com.betfair.aping.containers.ListMarketCatalogueContainer;
 import com.betfair.aping.containers.PlaceOrdersContainer;
@@ -27,6 +28,7 @@ import se.betfair.model.AccountStatementReport;
 import se.betfair.model.CancelExecutionReport;
 import se.betfair.model.ClearedOrderSummary;
 import se.betfair.model.CurrentOrderSummaryReport;
+import se.betfair.model.DeveloperApp;
 import se.betfair.model.Token;
 import se.betfair.model.MarketBook;
 import se.betfair.model.MarketCatalogue;
@@ -77,9 +79,10 @@ public class BetfairServices {
     private Connection connectionKeepAlive;
     private Connection connectionClearedOrders;
     private Connection connectionLogout;
-    private Connection connectionAccoundDetails;
+    private Connection connectionAccountDetails;
+    private Connection connectionDeveloperAppKeys;
     private String sessionToken;
-    private String accountName;
+    private final String accountName;
 
     public BetfairServices(String accountName) {
         this.accountName = accountName;
@@ -408,12 +411,28 @@ public class BetfairServices {
 
     public AccountDetailsResponse getAccountDetails() throws APINGException {
         final int ACCOUNT_DETAILS_DELAY = 1000;
-        if (connectionAccoundDetails == null) {
-            connectionAccoundDetails = new Connection(URL_RPC_SERVICES_ACCOUNT, accountName);
+        if (connectionAccountDetails == null) {
+            connectionAccountDetails = new Connection(URL_RPC_SERVICES_ACCOUNT, accountName);
         }
         Map<String, Object> params = new HashMap<>();
-        String result = makeRequest(ApiNgOperation.GET_ACCOUNT_DETAILS, params, connectionAccoundDetails, ACCOUNT_DETAILS_DELAY);
+        String result = makeRequest(ApiNgOperation.GET_ACCOUNT_DETAILS, params, connectionAccountDetails, ACCOUNT_DETAILS_DELAY);
         AccountDetailsResponseContainer container = JsonConverter.convertFromJson(result, AccountDetailsResponseContainer.class);
+
+        if (container.getError() != null) {
+            throw container.getError().getData().getAPINGException();
+        }
+
+        return container.getResult();
+    }
+
+    public List<DeveloperApp> getDeveloperAppKeys() throws APINGException {
+        final int DEVELOPER_APP_KEYS_DELAY = 1000;
+        if (connectionDeveloperAppKeys == null) {
+            connectionDeveloperAppKeys = new Connection(URL_RPC_SERVICES_ACCOUNT, accountName);
+        }
+        Map<String, Object> params = new HashMap<>();
+        String result = makeRequest(ApiNgOperation.GET_DEVELOPER_APP_KEYS, params, connectionDeveloperAppKeys, DEVELOPER_APP_KEYS_DELAY);
+        DeveloperAppContainer container = JsonConverter.convertFromJson(result, DeveloperAppContainer.class);
 
         if (container.getError() != null) {
             throw container.getError().getData().getAPINGException();

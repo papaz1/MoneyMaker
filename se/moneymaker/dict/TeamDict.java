@@ -9,11 +9,13 @@ public class TeamDict {
 
     private static final Map<String, String> teams = new HashMap<>();
 
+    public static void clear() {
+        teams.clear();
+    }
+
     public static void putAll(List<KeyValuePair> keyValuePairs) {
         for (KeyValuePair keyValuePair : keyValuePairs) {
-            if (!teams.containsKey(keyValuePair.getKey())) {
-                teams.put(keyValuePair.getKey(), keyValuePair.getValue());
-            }
+            teams.put(keyValuePair.getKey(), keyValuePair.getValue());
         }
     }
 
