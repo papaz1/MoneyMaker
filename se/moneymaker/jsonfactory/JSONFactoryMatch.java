@@ -60,13 +60,13 @@ public class JSONFactoryMatch {
             matchJSON.put(KEY_REFERENCE, matchReferenceJSON);
         }
 
-        JSONObject pool;
+        JSONObject pool = new JSONObject();
         if (match.getPoolType() != null) {
-            pool = new JSONObject();
             pool.put(KEY_POOLTYPE_NAME, match.getPoolType().name());
-            pool.put(KEY_EVENGROUP_NAME, match.getEventGroupName());
-            matchJSON.put(KEY_POOL, pool);
+
         }
+        pool.put(KEY_EVENGROUP_NAME, match.getEventGroupName());
+        matchJSON.put(KEY_POOL, pool);
 
         return matchJSON;
     }
