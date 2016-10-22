@@ -14,7 +14,7 @@ import se.betfair.model.RunnerCatalog;
 import se.moneymaker.db.DBServices;
 import se.moneymaker.dict.Config;
 import se.moneymaker.dict.BetOfferDict;
-import se.moneymaker.dict.TeamDict;
+import se.betfair.dict.MatchDict;
 import se.moneymaker.enums.BetOfferTypeEnum;
 import se.moneymaker.enums.ConfigEnum;
 import se.moneymaker.enums.LogLevelEnum;
@@ -32,7 +32,6 @@ import se.moneymaker.enums.ReadReason;
 import se.moneymaker.enums.Source;
 import se.moneymaker.exception.DBConnectionException;
 import se.moneymaker.exception.MatchException;
-import se.moneymaker.model.KeyValuePair;
 import se.moneymaker.model.MatchReference;
 import se.moneymaker.model.MatchReferenceInfo;
 import se.moneymaker.util.Log;
@@ -161,18 +160,53 @@ public class FactorySportsModel {
         List<String> tmpTeams = new ArrayList<>(1);
         tmpTeams.add(marketCatalogue.getEvent().getName());
         String[] teams = FactoryUtil.parseTeams(tmpTeams);
-        match.setHomeTeam(teams[0].trim());
-        match.setAwayTeam(teams[1].trim());
-        match.setHomeExternalKey(TeamDict.get(match.getHome()));
-        match.setAwayExternalKey(TeamDict.get(match.getAway()));
+        match.setHome(teams[0].trim());
+        match.setAway(teams[1].trim());
+        Match teamsInMatch = MatchDict.get(match.getExternalKey());
 
-        if (match.getHome().toUpperCase().contains("U1")
+        /**
+         * Match odds that is unmanaged on Betfair won't be in the Matchdict
+         * although over and under might be. In these cases we have the eventid
+         * because we have the over under market but we don't have the match
+         * odds. We'll ignore these matches.
+         */
+        if (teamsInMatch == null) {
+            throw new BetofferExcludedException("Market to an unmanaged match found. Event id on Betfair: " + match.getExternalKey());
+        }
+
+        if (match.getHome().equalsIgnoreCase(teamsInMatch.getHome())) {
+            match.setHomeExternalKey(teamsInMatch.getHomeExternalKey());
+            match.setAwayExternalKey(teamsInMatch.getAwayExternalKey());
+        } else {
+            if (match.getHome().equalsIgnoreCase(teamsInMatch.getAway())) {
+                match.setHomeExternalKey(teamsInMatch.getAwayExternalKey());
+                match.setAwayExternalKey(teamsInMatch.getHomeExternalKey());
+            } else {
+                //No match was found for the home team, let's try wth the away team 
+                if (match.getAway().equalsIgnoreCase(teamsInMatch.getHome())) {
+                    match.setAwayExternalKey(teamsInMatch.getHomeExternalKey());
+                    match.setHomeExternalKey(teamsInMatch.getAwayExternalKey());
+                } else if (match.getAway().equalsIgnoreCase(teamsInMatch.getAway())) {
+                    match.setAwayExternalKey(teamsInMatch.getAwayExternalKey());
+                    match.setHomeExternalKey(teamsInMatch.getHomeExternalKey());
+                }
+            }
+        }
+
+        if (match.getHomeExternalKey() == null || match.getAwayExternalKey() == null) {
+            throw new BetofferExcludedException("Team is missing external key for match: " + match.getHome() + " vs " + match.getAway());
+        }
+
+        if (match.getHome()
+                .toUpperCase().contains("U1")
                 || match.getHome().toUpperCase().contains("U2")
                 || match.getHome().toUpperCase().contains("(Y)")) {
             match.setPoolType(PoolType.YOUTH);
-        } else if (match.getHome().toUpperCase().contains("(W)")) {
+        } else if (match.getHome()
+                .toUpperCase().contains("(W)")) {
             match.setPoolType(PoolType.FEMALE);
         }
+
         match.setReference(createMatchReference(match));
         return match;
     }

@@ -112,17 +112,17 @@ public class FactoryFeedObjects extends DefaultHandler {
             startDateTime = parseDate(startDateTime);
             match.setEventDate(Utils.stringToDate(startDateTime));
         } else if (bHomeTeam & endName.equals(XMLTags.HOME_TEAM)) {
-            match.setHomeTeam(team);
+            match.setHome(team);
         } else if (bAwayTeam & endName.equals(XMLTags.AWAY_TEAM)) {
-            match.setAwayTeam(team);
+            match.setAway(team);
         } else if (bHomeTeam & endName.equals(XMLTags.SCORE)) {
             match.setHomeScore(Integer.parseInt(score));
         } else if (bAwayTeam & endName.equals(XMLTags.SCORE)) {
             match.setAwayScore(Integer.parseInt(score));
         } else if (bHomeTeam & endName.equals(XMLTags.RED_CARDS)) {
-            match.setHomeRedCards(Integer.parseInt(redCards));
+            //match.setHomeRedCards(Integer.parseInt(redCards));
         } else if (bAwayTeam & endName.equals(XMLTags.RED_CARDS)) {
-            match.setAwayRedCards(Integer.parseInt(redCards));
+            //match.setAwayRedCards(Integer.parseInt(redCards));
         }
         /*else if (endName.equals(XMLTags.DESCRIPTION)) {
          if (description.equals("1st Half")) {

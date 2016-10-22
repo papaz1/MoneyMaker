@@ -3,7 +3,6 @@ package se.moneymaker.serviceprovider;
 import com.betfair.aping.exceptions.APINGException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,7 +18,6 @@ import se.moneymaker.enums.ReadReason;
 import se.moneymaker.exception.BetOfferException;
 import se.moneymaker.exception.DBConnectionException;
 import se.moneymaker.exception.ErrorType;
-import se.moneymaker.model.Bookmaker;
 import se.moneymaker.util.Log;
 import se.moneymaker.util.Utils;
 

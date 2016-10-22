@@ -107,8 +107,8 @@ public class HistoricFactoryMatch {
 
     protected Match createMatch(Market market) {
         Match match = new Match();
-        match.setHomeTeam(market.getHome());
-        match.setAwayTeam(market.getAway());
+        match.setHome(market.getHome());
+        match.setAway(market.getAway());
         match.setEventDate(market.getEventDate());
 
         return match;

@@ -16,8 +16,6 @@ public class Match {
     private long Pk;
     private int homeScore = -1; //-1 means no score has been set which is better than 0 which is a valid score
     private int awayScore = -1;
-    private int homeRedCards;
-    private int awayRedCards;
     private Date utcEncounter;
     private Date matchTime;
     private String source;
@@ -125,11 +123,11 @@ public class Match {
         this.Pk = Pk;
     }
 
-    public void setHomeTeam(String homeTeam) {
+    public void setHome(String homeTeam) {
         this.home = homeTeam;
     }
 
-    public void setAwayTeam(String awayTeam) {
+    public void setAway(String awayTeam) {
         this.away = awayTeam;
     }
 
@@ -175,14 +173,6 @@ public class Match {
 
     public void setAwayScore(int awayScore) {
         this.awayScore = awayScore;
-    }
-
-    public void setAwayRedCards(int homeRedCards) {
-        this.homeRedCards = homeRedCards;
-    }
-
-    public void setHomeRedCards(int awayRedCards) {
-        this.awayRedCards = awayRedCards;
     }
 
     public Date getUTCEncounter() {
