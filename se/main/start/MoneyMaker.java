@@ -29,6 +29,13 @@ import se.moneymaker.util.Log;
 import se.moneymaker.util.LogOutputEnum;
 import se.moneymaker.util.Utils;
 
+/**
+ * TODO
+ * - Possibility to turn on logs depending on the service, for serviceprovider see everything
+ * - Only make one call to readMatch per match and not per betoffer
+ * - All critical logs should result in an email
+ * - Does the bet proxy really need to do a readMatch? 
+ */
 public class MoneyMaker {
 
     private static final String PRICEREADER = "Pricereader";

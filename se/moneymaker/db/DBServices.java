@@ -137,8 +137,8 @@ public class DBServices {
         List<String> marketIDs = new ArrayList<>();
         Iterator<JSONObject> iterator = result.iterator();
         while (iterator.hasNext()) {
-            JSONObject marketIDMap = iterator.next();
-            marketIDs.add((String) marketIDMap.get(JSONKeyNames.KEY_EXTERNAL_KEY));
+            JSONObject marketdDMap = iterator.next();
+            marketIDs.add((String) marketdDMap.get(JSONKeyNames.KEY_EXTERNAL_KEY));
         }
         return marketIDs;
     }

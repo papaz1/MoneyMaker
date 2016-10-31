@@ -226,11 +226,33 @@ public class PriceReader extends Application implements Runnable {
             MarketFilter tmpMarketFilter = createtMarketFilter();
             tmpMarketFilter.setMarketIds(marketIdsNew);
             marketCatalogues = services.listMarketCatalogue(tmpMarketFilter, marketProjection, pSessionToken);
+
             if (marketCatalogues == null) {
                 marketCatalogues = new ArrayList<>();
             } else {
-                MatchDict.putAll(marketCatalogues);
+
+                /**
+                 * The match odds market is needed for the external keys for the
+                 * team names. This is only done once per market. First time for
+                 * each market a readMatch call will be made to Betprover. After
+                 * the first, insert case, everything will be cached so the
+                 * overhead cost of doing this is only for the first call in
+                 * order to keep the design exactly the same for Pricereader and
+                 * readPrice.
+                 */
+                MarketFilter tmpMatchOddsFilter = createtMarketFilter();
+                Set<String> matchOddsTypeCode = new HashSet<>(1);
+                matchOddsTypeCode.add(Common.MARKET_TYPE_MATCH_ODDS);
+                tmpMatchOddsFilter.setMarketTypeCodes(matchOddsTypeCode);
+                Set<String> eventIds = new HashSet<>();
+                for (MarketCatalogue tmpCatalogue : marketCatalogues) {
+                    eventIds.add(tmpCatalogue.getEvent().getId());
+                }
+                tmpMatchOddsFilter.setEventIds(eventIds);
+                List<MarketCatalogue> matchOddsMarketCatalogies = services.listMarketCatalogue(tmpMatchOddsFilter, marketProjection, pSessionToken);
+                MatchDict.putAll(matchOddsMarketCatalogies);
             }
+
             marketCatalogues.addAll(existingMarketCatalogues);
             for (MarketCatalogue tmpCatalgoue : marketCatalogues) {
                 marketCatalgouesMap.put(tmpCatalgoue.getMarketId(), tmpCatalgoue);

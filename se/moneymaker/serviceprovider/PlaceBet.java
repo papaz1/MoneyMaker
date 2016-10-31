@@ -203,7 +203,6 @@ public class PlaceBet extends HttpServlet {
             printWriter.print(Utils.toJSONStringErrorMsg(e.getErrorType(), e.getMessage(), null));
             Log.logMessage(CLASSNAME, METHOD, e.getMessage(), LogLevelEnum.ERROR, false);
         }
-        Log.logMessage(CLASSNAME, METHOD, r + ": All done", LogLevelEnum.CRITICAL, true);
     }
 
     private PlaceExecutionReport placeOrder(String marketId, List<PlaceInstruction> placeInstructions, String sessionToken) throws APINGException, BetException, BetOfferException {

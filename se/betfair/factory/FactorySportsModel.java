@@ -127,6 +127,7 @@ public class FactorySportsModel {
                 Log.logMessage(CLASSNAME, METHOD, e.getMessage(), LogLevelEnum.WARNING, false);
             } catch (BetofferExcludedException | MatchException e) {
                 numberOfExcludedBetOffers++;
+                Log.logMessage(CLASSNAME, METHOD, e.getMessage(), LogLevelEnum.WARNING, false);
             }
         }
         if (numberOfExcludedBetOffers > 0) {

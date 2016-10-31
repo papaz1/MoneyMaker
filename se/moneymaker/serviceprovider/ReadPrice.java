@@ -46,8 +46,8 @@ public class ReadPrice extends HttpServlet {
         String sessionToken = request.getHeader(ServiceProviderConstants.SESSION_TOKEN);
         if (sessionToken != null) {
             StringBuilder sb = ServiceProviderUtility.readRequest(request.getReader());
-            BetOfferIdsContainer betOfferIDs = JsonConverter.convertFromJson(sb.toString(), BetOfferIdsContainer.class);
-            String accountName = betOfferIDs.getAccount().getAccountName();
+            BetOfferIdsContainer betOfferIds = JsonConverter.convertFromJson(sb.toString(), BetOfferIdsContainer.class);
+            String accountName = betOfferIds.getAccount().getAccountName();
             
             synchronized (this) {
                 if (priceReader == null) {
@@ -55,12 +55,12 @@ public class ReadPrice extends HttpServlet {
                 }
             }
 
-            List<String> marketIDs;
+            List<String> marketIds;
             try {
-                marketIDs = services.readBetOfferExternalKeys(betOfferIDs);
-                if (!marketIDs.isEmpty()) {
+                marketIds = services.readBetOfferExternalKeys(betOfferIds);
+                if (!marketIds.isEmpty()) {
                     try {
-                        priceReader.readSendPrice(marketIDs, sessionToken);
+                        priceReader.readSendPrice(marketIds, sessionToken);
                         response.setStatus(HttpServletResponse.SC_OK);
                     } catch (APINGException e) {
                         if (e.getErrorCode().equals(ErrorCode.INVALID_SESSION_INFORMATION.name())) {
