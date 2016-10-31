@@ -34,7 +34,8 @@ import se.moneymaker.util.Utils;
  * - Possibility to turn on logs depending on the service, for serviceprovider see everything
  * - Only make one call to readMatch per match and not per betoffer
  * - All critical logs should result in an email
- * - Does the bet proxy really need to do a readMatch? 
+ * - Does the bet proxy really need to do a readMatch - only make a UPDATE statement. Now one unnecessary INSERT is being made 
+ * in order to get outcome pks.
  */
 public class MoneyMaker {
 
