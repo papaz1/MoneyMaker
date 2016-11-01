@@ -84,10 +84,10 @@ public class DBSportsModel {
                 //currentScoresJSON.clear();
                 //timeReferencesJSON.add(JSONFactoryMatch.createTimeReference(match));
             } catch (DBConnectionException e) {
-                if (e.getErrorType().equals(DBErrorType.MATCH_NOT_FOUND.toString())) {
+                if (e.getErrorType().equals(DBErrorType.MATCH_NOT_FOUND.toString()) || e.getErrorType().equals(DBErrorType.REF_CONTRADICTION.toString())) {
                     if (matchesNotFound != null
                             && !matchesNotFound.contains(match.getExternalKey())
-                            && e.getErrorType().equals(DBErrorType.MATCH_NOT_FOUND.toString())) {
+                            && (e.getErrorType().equals(DBErrorType.MATCH_NOT_FOUND.toString()) || e.getErrorType().equals(DBErrorType.REF_CONTRADICTION.toString()))) {
                         matchesNotFound.add(match.getExternalKey());
                         StringBuilder sb = new StringBuilder();
                         sb.append("Event date: ").append(match.getEventDate()).append(" Teams: ").append(match.getHome()).append(" vs ").append(match.getAway());
@@ -166,7 +166,7 @@ public class DBSportsModel {
             } catch (DBConnectionException e) {
                 if (matchesNotFound != null
                         && !matchesNotFound.contains(matchCopy.getExternalKey())
-                        && e.getErrorType().equals(DBErrorType.MATCH_NOT_FOUND.toString())) {
+                        && (e.getErrorType().equals(DBErrorType.MATCH_NOT_FOUND.toString()) || e.getErrorType().equals(DBErrorType.REF_CONTRADICTION.toString()))) {
                     matchesNotFound.add(matchCopy.getExternalKey());
                     StringBuilder sb = new StringBuilder();
                     sb.append("Event date: ").append(matchCopy.getEventDate()).append(" Teams: ").append(matchCopy.getHome()).append(" vs ").append(matchCopy.getAway());

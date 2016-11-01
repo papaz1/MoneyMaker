@@ -21,6 +21,7 @@ public class Log {
     public Log() {
         msgTurnOff = new HashMap<>();
         msgTurnOff.put(DBErrorType.MATCH_NOT_FOUND.toString(), 0);
+        msgTurnOff.put(DBErrorType.REF_CONTRADICTION.toString(), 0);
         Log.OUTPUT_MODE = LogOutputEnum.EXTERNAL_LOGGER;
     }
 

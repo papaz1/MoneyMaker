@@ -215,7 +215,7 @@ public class HistoricFileProcesser {
                                     matchMarketMapList.add(new MatchMarketMap(parserProcess.getMatch(), parserProcess.getMarket()));
                                 }
                             } catch (DBConnectionException e) {
-                                if (e.getErrorType().equals(DBErrorType.MATCH_NOT_FOUND.toString())) {
+                                if (e.getErrorType().equals(DBErrorType.MATCH_NOT_FOUND.toString()) || e.getErrorType().equals(DBErrorType.REF_CONTRADICTION.toString())) {
                                     if (!notFound.contains(hashCode)) {
                                         notFound.add(hashCode);
                                     }
@@ -527,7 +527,7 @@ public class HistoricFileProcesser {
                 matchMarketMapResult = new MatchMarketMap(match, matchMarketMap.getMarket());
             } catch (DBConnectionException e1) {
                 this.e = e1;
-                if (!e1.getErrorType().equalsIgnoreCase(DBErrorType.MATCH_NOT_FOUND.toString())) {
+                if (!e1.getErrorType().equalsIgnoreCase(DBErrorType.MATCH_NOT_FOUND.toString()) || e.getErrorType().equals(DBErrorType.REF_CONTRADICTION.toString())) {
                     Log.logMessage(CLASSNAME, METHOD, e1.getMessage(), LogLevelEnum.ERROR, false);
                 }
             }

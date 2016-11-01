@@ -124,10 +124,10 @@ public class FactorySportsModel {
                 }
             } catch (BetOfferException | OutcomeException | ParseException e) {
                 numberOfExcludedBetOffers++;
-                Log.logMessage(CLASSNAME, METHOD, e.getMessage(), LogLevelEnum.WARNING, false);
+                //Log.logMessage(CLASSNAME, METHOD, e.getMessage(), LogLevelEnum.WARNING, false);
             } catch (BetofferExcludedException | MatchException e) {
                 numberOfExcludedBetOffers++;
-                Log.logMessage(CLASSNAME, METHOD, e.getMessage(), LogLevelEnum.WARNING, false);
+                //Log.logMessage(CLASSNAME, METHOD, e.getMessage(), LogLevelEnum.WARNING, false);
             }
         }
         if (numberOfExcludedBetOffers > 0) {
