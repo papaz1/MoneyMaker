@@ -62,7 +62,7 @@ public class MoneyMaker {
 
         //Set to false when debugging in Netbeans
         if (true) {
-            Log.logMessage("MoneyMaker", "main", "Version 1.0", LogLevelEnum.INFO, true);
+            System.out.println("Version 1.0");
             try {
                 main.init(args);
             } catch (DBConnectionException | AccountException e) {
