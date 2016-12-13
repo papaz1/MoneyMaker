@@ -56,6 +56,7 @@ public class PriceReader extends Application implements Runnable {
     private Calendar to;
     private TimeRange timeRange;
     private Set<String> marketTypeCodeMatchOdds;
+    private Set<String> marketTypeCodeHalfTime;
     private Set<String> marketTypeCodeOverUnder1;
     private Set<String> marketTypeCodeOverUnder2;
     private Set<String> marketTypeCodeOverUnder3;
@@ -107,13 +108,15 @@ public class PriceReader extends Application implements Runnable {
             marketTypeCodeMatchOdds = new HashSet<>();
             marketTypeCodeMatchOdds.add(Common.MARKET_TYPE_MATCH_ODDS);
             marketTypeCodes.add(marketTypeCodeMatchOdds);
+            marketTypeCodeHalfTime = new HashSet<>();
+            marketTypeCodeHalfTime.add(Common.MARKET_TYPE_HALF_TIME);
+            marketTypeCodes.add(marketTypeCodeHalfTime);
             marketTypeCodeOverUnder1 = new HashSet<>();
             marketTypeCodeOverUnder2 = new HashSet<>();
             marketTypeCodeOverUnder3 = new HashSet<>();
             marketTypeCodeOverUnder4 = new HashSet<>();
             marketTypeCodeOverUnder5 = new HashSet<>();
             marketTypeCodeOverUnder6 = new HashSet<>();
-
             marketTypeCodeOverUnder1.add(Common.MARKET_TYPE_OVER_UNDER_05);
             marketTypeCodeOverUnder2.add(Common.MARKET_TYPE_OVER_UNDER_15);
             marketTypeCodeOverUnder3.add(Common.MARKET_TYPE_OVER_UNDER_25);
@@ -160,7 +163,8 @@ public class PriceReader extends Application implements Runnable {
                             marketCatalogues = new ArrayList<>();
                         }
                         marketCatalogues.addAll(tmpMarketCatalogues);
-                        if (marketTypeCode.contains(Common.MARKET_TYPE_MATCH_ODDS)) {
+                        if (marketTypeCode.contains(Common.MARKET_TYPE_MATCH_ODDS)
+                                || marketTypeCode.contains(Common.MARKET_TYPE_HALF_TIME)) {
                             MatchDict.putAll(marketCatalogues);
                         }
                     }

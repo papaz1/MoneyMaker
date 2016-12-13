@@ -20,6 +20,7 @@ public class Common {
     public static final String MARKET_TYPE_OVER_UNDER_75 = "OVER_UNDER_75";
     public static final String MARKET_TYPE_OVER_UNDER_85 = "OVER_UNDER_85";
     public static final String MARKET_TYPE_CORRECT_SCORE = "CORRECT_SCORE";
+    public static final String MARKET_TYPE_HALF_TIME = "HALF_TIME";
     public static final String MARKET_PROJECTION_MARKET_DESCRIPTION = "MARKET_DESCRIPTION";
     public static final String MARKET_PROJECTION_EVENT = "EVENT";
     public static final String MARKET_PROJECTION_EVENT_TYPE = "EVENT_TYPE";

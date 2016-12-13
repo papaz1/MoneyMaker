@@ -20,6 +20,7 @@ public enum BCMarketEnum {
     SCORECAST("SCORECAST", false, false, true),
     OVER_UNDER("OVER/UNDER", false, true, false),
     MATCH_ODDS("MATCH ODDS", true, false, false),
+    HALF_TIME("HALF TIME", true, false, false),
     CORRECT_SCORE("CORRECT SCORE", true, false, false),
     //The two below are not for market filtering
     FIXTURES("FIXTURES", false, false, true),

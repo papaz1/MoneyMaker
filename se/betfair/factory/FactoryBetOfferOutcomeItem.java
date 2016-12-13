@@ -70,6 +70,8 @@ public class FactoryBetOfferOutcomeItem {
             }
         } else if (marketName.equalsIgnoreCase(BCMarketEnum.MATCH_ODDS.value())) {
             betOfferItem = new BetOfferItem(BetOfferTypeEnum.MATCH_ODDS);
+        } else if (marketName.equalsIgnoreCase(BCMarketEnum.HALF_TIME.value())) {
+            betOfferItem = new BetOfferItem(BetOfferTypeEnum.HALF_TIME);
         } else if (marketName.equalsIgnoreCase(BCMarketEnum.CORRECT_SCORE.value())) {
             betOfferItem = new BetOfferItem(BetOfferTypeEnum.CORRECT_SCORE2);
         } else {
@@ -88,7 +90,8 @@ public class FactoryBetOfferOutcomeItem {
         OutcomeItem outcomeItem = null;
         String runnerNameUpperCase = runnerName.toUpperCase().trim();
 
-        if (betOfferType.equals(BetOfferTypeEnum.MATCH_ODDS)) {
+        if (betOfferType.equals(BetOfferTypeEnum.MATCH_ODDS)
+                || betOfferType.equals(BetOfferTypeEnum.HALF_TIME)) {
             if (runnerNameUpperCase.equalsIgnoreCase(home.toUpperCase().trim())) {
                 outcomeItem = new OutcomeItem(OutcomeTypeEnum.HOME);
             } else if (runnerNameUpperCase.equalsIgnoreCase(away.toUpperCase().trim())) {
@@ -155,7 +158,8 @@ public class FactoryBetOfferOutcomeItem {
         //certain patterns to make it easier to now which is HOME and AWAY.
         //For example if there are three outcomes, one of them is identified as THE DRAW
         //and the other one either HOME or AWAY then we automatically know the 3rd.
-        if (betOfferType.equals(BetOfferTypeEnum.MATCH_ODDS)) {
+        if (betOfferType.equals(BetOfferTypeEnum.MATCH_ODDS)
+                || betOfferType.equals(BetOfferTypeEnum.HALF_TIME)) {
             boolean homeFound = false;
             boolean drawFound = false;
             boolean awayFound = false;

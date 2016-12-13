@@ -21,6 +21,7 @@ import se.main.application.HistoricReader;
 import se.main.application.PriceReader;
 import se.moneymaker.dict.Config;
 import se.moneymaker.enums.ConfigEnum;
+import se.moneymaker.enums.LogLevelEnum;
 import se.moneymaker.enums.ReadReason;
 import se.moneymaker.exception.DBConnectionException;
 import se.moneymaker.exception.AccountException;
@@ -30,12 +31,11 @@ import se.moneymaker.util.LogOutputEnum;
 import se.moneymaker.util.Utils;
 
 /**
- * TODO
- * - Possibility to turn on logs depending on the service, for serviceprovider see everything
- * - Only make one call to readMatch per match and not per betoffer
- * - All critical logs should result in an email
- * - Does the bet proxy really need to do a readMatch - only make a UPDATE statement. Now one unnecessary INSERT is being made 
- * in order to get outcome pks.
+ * TODO - Possibility to turn on logs depending on the service, for
+ * serviceprovider see everything - Only make one call to readMatch per match
+ * and not per betoffer - All critical logs should result in an email - Does the
+ * bet proxy really need to do a readMatch - only make a UPDATE statement. Now
+ * one unnecessary INSERT is being made in order to get outcome pks.
  */
 public class MoneyMaker {
 
@@ -62,6 +62,7 @@ public class MoneyMaker {
 
         //Set to false when debugging in Netbeans
         if (true) {
+            Log.logMessage("MoneyMaker", "main", "Version 1.0", LogLevelEnum.INFO, true);
             try {
                 main.init(args);
             } catch (DBConnectionException | AccountException e) {
@@ -253,7 +254,7 @@ public class MoneyMaker {
         Config config = Config.getInstance();
         if (application.equalsIgnoreCase(PRICEREADER)) {
             try {
-                
+
                 //Prematchreader
                 String betfairSession = Account.getInstance().login(config.get(ConfigEnum.BF_USER_DJ78351), config.get(ConfigEnum.BF_PASS_DJ78351));
                 PriceReader priceReader = new PriceReader(betfairSession, config.get(ConfigEnum.BF_USER_DJ78351), true, ReadReason.HEARTBEAT, 6);

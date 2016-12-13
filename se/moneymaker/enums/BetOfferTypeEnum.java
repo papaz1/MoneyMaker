@@ -3,6 +3,7 @@ package se.moneymaker.enums;
 public enum BetOfferTypeEnum {
 
     MATCH_ODDS("1X2", "GOALS", "RT"),
+    HALF_TIME("1X2", "GOALS", "P1"),
     OU_W("OU-W", "GOALSUM", "RT"),
     OU_Q("OU-Q", "GOALSUM", "RT"),
     OU_H("OU-H", "GOALSUM", "RT"),
